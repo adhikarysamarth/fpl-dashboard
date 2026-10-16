@@ -133,4 +133,173 @@ tr:hover{
     <div class="card">
         <h3>League Members</h3>
         <div class="card-value" id="members">-</div>
-    </div
+    </div>
+
+    <div class="card">
+        <h3>Last Updated</h3>
+        <div id="updated">-</div>
+    </div>
+
+    <div class="card">
+        <h3>Your Team</h3>
+        <div id="myTeam">-</div>
+    </div>
+
+</div>
+
+<h2>League Table</h2>
+
+<table>
+
+<thead>
+<tr>
+    <th>#</th>
+    <th>Move</th>
+    <th>Team</th>
+    <th>Manager</th>
+    <th>GW Pts</th>
+    <th>Total</th>
+</tr>
+</thead>
+
+<tbody id="tableBody">
+<tr>
+    <td colspan="6" class="loading">Loading league data...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+fetch("https://fpl-api.adhikarysamarth.workers.dev/")
+.then(res => res.json())
+.then(data => {
+
+    const league = data.league;
+    const teams = league.standings.results;
+
+    document.getElementById("leagueName").innerText =
+        league.league.name;
+
+    const leader = teams[0];
+
+    document.getElementById("leader").innerHTML =
+        `
+        ${leader.entry_name}<br>
+        <small>${leader.total} pts</small>
+        `;
+
+    const managerOfWeek =
+        teams.reduce((a,b)=>
+            a.event_total > b.event_total ? a : b
+        );
+
+    document.getElementById("gwWinner").innerHTML =
+        `
+        ${managerOfWeek.entry_name}<br>
+        <small>${managerOfWeek.event_total} pts</small>
+        `;
+
+    document.getElementById("members").innerText =
+        teams.length;
+
+    document.getElementById("updated").innerText =
+        new Date(league.last_updated_data)
+            .toLocaleString();
+
+    const samarth = teams.find(
+        t => t.player_name === "Samarth Adhikary"
+    );
+
+    if(samarth){
+
+        document.getElementById("myTeam").innerHTML =
+        `
+        <strong>${samarth.entry_name}</strong><br>
+        Rank #${samarth.rank}<br>
+        ${samarth.total} pts
+        `;
+    }
+
+    let html = "";
+
+    teams.forEach(team=>{
+
+        let movement = "▬";
+        let movementClass = "same";
+
+        if(team.rank < team.last_rank){
+            movement = "▲";
+            movementClass = "up";
+        }
+
+        if(team.rank > team.last_rank){
+            movement = "▼";
+            movementClass = "down";
+        }
+
+        let rowClass = "";
+
+        if(team.rank === 1)
+            rowClass = "gold";
+
+        if(team.rank === 2)
+            rowClass = "silver";
+
+        if(team.rank === 3)
+            rowClass = "bronze";
+
+        html +=
+
+        `<tr class="${rowClass}">
+
+            <td>${team.rank}</td>
+
+            <td class="${movementClass}">
+                ${movement}
+            </td>
+
+            <td>
+                ${team.entry_name}
+            </td>
+
+            <td>
+                ${team.player_name}
+            </td>
+
+            <td>
+                ${team.event_total}
+            </td>
+
+            <td>
+                ${team.total}
+            </td>
+
+        </tr>`;
+    });
+
+    document.getElementById("tableBody")
+        .innerHTML = html;
+
+})
+.catch(error => {
+
+    console.error(error);
+
+    document.getElementById("tableBody")
+        .innerHTML =
+        `<tr>
+            <td colspan="6">
+                Error loading league data.
+            </td>
+        </tr>`;
+
+});
+
+</script>
+
+</body>
+</html>
