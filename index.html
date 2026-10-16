@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>Sagarmatha League</title>
 
@@ -31,6 +31,26 @@ header h1{
     padding:20px;
 }
 
+.last-updated{
+    position:fixed;
+    top:15px;
+    right:20px;
+    background:rgba(0,0,0,.4);
+    backdrop-filter:blur(8px);
+    padding:10px 15px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.15);
+    z-index:1000;
+    text-align:right;
+    font-size:12px;
+}
+
+.last-updated span{
+    color:#00ff87;
+    font-weight:bold;
+    display:block;
+}
+
 .cards{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -50,7 +70,14 @@ header h1{
 }
 
 .big{
-    font-size:28px;
+    font-size:24px;
+    font-weight:bold;
+}
+
+#countdown{
+    color:#00ff87;
+    font-size:20px;
+    margin-top:10px;
     font-weight:bold;
 }
 
@@ -107,12 +134,15 @@ tr:hover{
 
 <body>
 
-<header>
+<div class="last-updated">
+    <span>Last Updated</span>
+    <div id="lastUpdatedTop">Loading...</div>
+</div>
 
+<header>
 <h1 id="leagueName">
 Loading...
 </h1>
-
 </header>
 
 <div class="container">
@@ -137,8 +167,7 @@ Loading...
 <div class="card">
 <h3>Next Deadline</h3>
 <div id="deadline"></div>
-<br>
-<div id="countdown" class="big"></div>
+<div id="countdown"></div>
 </div>
 
 <div class="card">
@@ -243,75 +272,65 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
 
     if(nextGW){
 
-    const deadlineDate = new Date(
-        nextGW.deadline_time
-    );
+        const deadlineDate =
+            new Date(nextGW.deadline_time);
 
-    document.getElementById("deadline")
-    .innerText =
-    deadlineDate.toLocaleString();
+        document.getElementById("deadline")
+        .innerText =
+        deadlineDate.toLocaleString();
 
-    function updateCountdown(){
+        function updateCountdown(){
 
-        const now = new Date();
+            const now = new Date();
 
-        const distance =
-            deadlineDate - now;
+            const distance =
+                deadlineDate - now;
 
-        if(distance <= 0){
+            if(distance <= 0){
+
+                document.getElementById(
+                    "countdown"
+                ).innerHTML =
+                "⏰ Deadline Passed";
+
+                return;
+            }
+
+            const days =
+                Math.floor(distance/(1000*60*60*24));
+
+            const hours =
+                Math.floor((distance%(1000*60*60*24))
+                /(1000*60*60));
+
+            const minutes =
+                Math.floor((distance%(1000*60*60))
+                /(1000*60));
+
+            const seconds =
+                Math.floor((distance%(1000*60))
+                /1000);
 
             document.getElementById(
                 "countdown"
             ).innerHTML =
-            "⏰ Deadline Passed";
-
-            return;
+            `${days}d ${hours}h ${minutes}m ${seconds}s`;
         }
 
-        const days =
-            Math.floor(
-                distance /
-                (1000 * 60 * 60 * 24)
-            );
+        updateCountdown();
 
-        const hours =
-            Math.floor(
-                (distance %
-                (1000 * 60 * 60 * 24))
-                /
-                (1000 * 60 * 60)
-            );
-
-        const minutes =
-            Math.floor(
-                (distance %
-                (1000 * 60 * 60))
-                /
-                (1000 * 60)
-            );
-
-        const seconds =
-            Math.floor(
-                (distance %
-                (1000 * 60))
-                /
-                1000
-            );
-
-        document.getElementById(
-            "countdown"
-        ).innerHTML =
-        `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
+        setInterval(updateCountdown,1000);
     }
 
-    updateCountdown();
+    const lastUpdated =
+        new Date(
+            leagueData.last_updated_data
+        ).toLocaleString();
 
-    setInterval(
-        updateCountdown,
-        1000
-    );
-}
+    document.getElementById(
+        "lastUpdatedTop"
+    ).innerText =
+    lastUpdated;
 
     const myTeam =
         teams.find(
@@ -368,18 +387,10 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
             <td class="${moveClass}">
                 ${move}
             </td>
-            <td>
-                ${team.entry_name}
-            </td>
-            <td>
-                ${team.player_name}
-            </td>
-            <td>
-                ${team.event_total}
-            </td>
-            <td>
-                ${team.total}
-            </td>
+            <td>${team.entry_name}</td>
+            <td>${team.player_name}</td>
+            <td>${team.event_total}</td>
+            <td>${team.total}</td>
         </tr>
         `;
     });
