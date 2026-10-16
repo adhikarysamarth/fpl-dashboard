@@ -4,53 +4,63 @@
     <title>Sagarmatha League</title>
 
     <style>
-        body {
+        body{
             font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: auto;
-            padding: 20px;
-            background: #f5f5f5;
+            margin:40px;
+            background:#f5f7fa;
         }
 
-        h1 {
-            text-align: center;
+        h1{
+            text-align:center;
+            color:#37003c;
         }
 
-        .cards {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+        .cards{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:20px;
+            margin-bottom:30px;
         }
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            flex: 1;
-            min-width: 200px;
-            box-shadow: 0 2px 5px rgba(0,0,0,.1);
+        .card{
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
+        .card h3{
+            margin-top:0;
+            color:#37003c;
         }
 
-        th {
-            background: #37003c;
-            color: white;
+        table{
+            width:100%;
+            border-collapse:collapse;
+            background:white;
         }
 
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
+        th{
+            background:#37003c;
+            color:white;
+            padding:12px;
         }
 
-        tr:nth-child(even){
-            background:#f8f8f8;
+        td{
+            padding:12px;
+            border-bottom:1px solid #ddd;
+            text-align:center;
         }
+
+        tr:hover{
+            background:#f3f3f3;
+        }
+
+        .leader{
+            font-weight:bold;
+            color:green;
+        }
+
     </style>
 </head>
 
@@ -62,22 +72,22 @@
 
     <div class="card">
         <h3>Current Leader</h3>
-        <div id="leader"></div>
+        <div id="leader">Loading...</div>
     </div>
 
     <div class="card">
         <h3>Latest GW Winner</h3>
-        <div id="gwWinner"></div>
+        <div id="gwWinner">Loading...</div>
     </div>
 
     <div class="card">
         <h3>League Members</h3>
-        <div id="members"></div>
+        <div id="members">Loading...</div>
     </div>
 
     <div class="card">
         <h3>Last Updated</h3>
-        <div id="updated"></div>
+        <div id="updated">Loading...</div>
     </div>
 
 </div>
@@ -85,64 +95,98 @@
 <h2>League Table</h2>
 
 <table>
-    <thead>
-        <tr>
-            <th>Rank</th>
-            <th>Team</th>
-            <th>Manager</th>
-            <th>GW Points</th>
-            <th>Total Points</th>
-        </tr>
-    </thead>
+<thead>
+<tr>
+    <th>Rank</th>
+    <th>Team</th>
+    <th>Manager</th>
+    <th>GW Points</th>
+    <th>Total Points</th>
+</tr>
+</thead>
 
-    <tbody id="leagueTable">
+<tbody id="tableBody"></tbody>
 
-    </tbody>
 </table>
 
 <script>
 
-const leagueData = YOUR_JSON_OBJECT_HERE;
+fetch("https://fpl-api.adhikarysamarth.workers.dev/")
+.then(response => response.json())
+.then(data => {
 
-document.getElementById("leagueName").innerText =
-    leagueData.league.name;
+    document.getElementById("leagueName").innerText =
+        data.league.name;
 
-const results = leagueData.standings.results;
+    const teams = data.standings.results;
 
-const leader = results[0];
+    const leader = teams[0];
 
-document.getElementById("leader").innerHTML =
-    `<strong>${leader.entry_name}</strong><br>
-    ${leader.total} pts`;
+    document.getElementById("leader").innerHTML =
+        `
+        <strong>${leader.entry_name}</strong><br>
+        ${leader.player_name}<br>
+        ${leader.total} pts
+        `;
 
-const gwWinner = results.reduce((a,b)=>
-    a.event_total > b.event_total ? a : b
-);
+    const gwWinner = teams.reduce((highest,current)=>
+        current.event_total > highest.event_total
+        ? current
+        : highest
+    );
 
-document.getElementById("gwWinner").innerHTML =
-    `<strong>${gwWinner.entry_name}</strong><br>
-    ${gwWinner.event_total} pts`;
+    document.getElementById("gwWinner").innerHTML =
+        `
+        <strong>${gwWinner.entry_name}</strong><br>
+        ${gwWinner.event_total} points
+        `;
 
-document.getElementById("members").innerText =
-    results.length;
+    document.getElementById("members").innerText =
+        teams.length;
 
-document.getElementById("updated").innerText =
-    new Date(leagueData.last_updated_data)
-    .toLocaleString();
+    document.getElementById("updated").innerText =
+        new Date(data.last_updated_data)
+        .toLocaleString();
 
-const table = document.getElementById("leagueTable");
+    let html = "";
 
-results.forEach(team => {
+    teams.forEach(team => {
 
-    table.innerHTML += `
+        html += `
         <tr>
+
             <td>${team.rank}</td>
-            <td>${team.entry_name}</td>
-            <td>${team.player_name}</td>
-            <td>${team.event_total}</td>
-            <td>${team.total}</td>
+
+            <td>
+                ${team.entry_name}
+            </td>
+
+            <td>
+                ${team.player_name}
+            </td>
+
+            <td>
+                ${team.event_total}
+            </td>
+
+            <td>
+                ${team.total}
+            </td>
+
         </tr>
-    `;
+        `;
+    });
+
+    document.getElementById("tableBody")
+        .innerHTML = html;
+
+})
+.catch(error => {
+
+    console.error(error);
+
+    document.body.innerHTML +=
+        "<h3 style='color:red'>Unable to load data</h3>";
 
 });
 
