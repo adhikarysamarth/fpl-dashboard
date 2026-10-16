@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Testing FPL API</h1>
+
+<script>
+fetch("https://fantasy.premierleague.com/api/leagues-classic/1056457/standings/")
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        document.body.innerHTML +=
+            `<h2>${data.league.name}</h2>`;
+    })
+    .catch(err => {
+        console.error(err);
+        document.body.innerHTML +=
+            `<p style="color:red">${err}</p>`;
+    });
+</script>
+
+</body>
+</html>
