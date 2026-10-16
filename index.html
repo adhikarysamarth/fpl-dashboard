@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Sagarmatha League</title>
 
 <style>
@@ -11,17 +13,18 @@ body{
     margin:0;
     background:#071225;
     color:white;
-    font-family:Segoe UI,Arial,sans-serif;
+    font-family:Segoe UI,sans-serif;
 }
 
 header{
-    background:linear-gradient(135deg,#49005c,#00ff87);
-    padding:25px;
+    background:linear-gradient(135deg,#4b006e,#00ff87);
+    padding:30px;
     text-align:center;
 }
 
-h1{
+header h1{
     margin:0;
+    font-size:48px;
 }
 
 .container{
@@ -30,7 +33,7 @@ h1{
 
 .cards{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:20px;
     margin-bottom:30px;
 }
@@ -46,7 +49,7 @@ h1{
     color:#00ff87;
 }
 
-.card-value{
+.big{
     font-size:28px;
     font-weight:bold;
 }
@@ -58,31 +61,30 @@ table{
 }
 
 th{
-    background:#4a005d;
-    color:white;
+    background:#4b006e;
     padding:12px;
 }
 
 td{
     padding:12px;
-    border-bottom:1px solid #243451;
     text-align:center;
+    border-bottom:1px solid #263554;
 }
 
 tr:hover{
-    background:#1b2c4d;
+    background:#1d2f50;
 }
 
 .gold{
-    background:rgba(255,215,0,.12);
+    background:rgba(255,215,0,.15);
 }
 
 .silver{
-    background:rgba(192,192,192,.12);
+    background:rgba(192,192,192,.15);
 }
 
 .bronze{
-    background:rgba(205,127,50,.12);
+    background:rgba(205,127,50,.15);
 }
 
 .up{
@@ -91,7 +93,7 @@ tr:hover{
 }
 
 .down{
-    color:#ff7373;
+    color:#ff6a6a;
     font-weight:bold;
 }
 
@@ -106,32 +108,46 @@ tr:hover{
 <body>
 
 <header>
-    <h1 id="leagueName">Loading...</h1>
+
+<h1 id="leagueName">
+Loading...
+</h1>
+
 </header>
 
 <div class="container">
 
 <div class="cards">
 
-    <div class="card">
-        <h3>Current Leader</h3>
-        <div id="leader" class="card-value">-</div>
-    </div>
+<div class="card">
+<h3>Current Leader</h3>
+<div id="leader" class="big">-</div>
+</div>
 
-    <div class="card">
-        <h3>Manager Of The Week</h3>
-        <div id="gwWinner" class="card-value">-</div>
-    </div>
+<div class="card">
+<h3>Manager Of The Week</h3>
+<div id="winner" class="big">-</div>
+</div>
 
-    <div class="card">
-        <h3>League Members</h3>
-        <div id="members" class="card-value">-</div>
-    </div>
+<div class="card">
+<h3>Current GW</h3>
+<div id="gw" class="big">-</div>
+</div>
 
-    <div class="card">
-        <h3>Your Team</h3>
-        <div id="myTeam">-</div>
-    </div>
+<div class="card">
+<h3>Next Deadline</h3>
+<div id="deadline">-</div>
+</div>
+
+<div class="card">
+<h3>League Members</h3>
+<div id="members" class="big">-</div>
+</div>
+
+<div class="card">
+<h3>Your Team</h3>
+<div id="myTeam">-</div>
+</div>
 
 </div>
 
@@ -141,19 +157,23 @@ tr:hover{
 
 <thead>
 <tr>
-    <th>Rank</th>
-    <th>Move</th>
-    <th>Team</th>
-    <th>Manager</th>
-    <th>GW Points</th>
-    <th>Total Points</th>
+<th>Rank</th>
+<th>Move</th>
+<th>Team</th>
+<th>Manager</th>
+<th>GW</th>
+<th>Total</th>
 </tr>
 </thead>
 
 <tbody id="tableBody">
+
 <tr>
-<td colspan="6">Loading league data...</td>
+<td colspan="6">
+Loading...
+</td>
 </tr>
+
 </tbody>
 
 </table>
@@ -163,23 +183,23 @@ tr:hover{
 <script>
 
 fetch("https://fpl-api.adhikarysamarth.workers.dev/")
-.then(res => res.json())
+.then(response => response.json())
 .then(data => {
 
-    console.log(data);
-
-    const leagueName =
-        data.league.league.name;
+    const leagueData = data.league;
+    const bootstrap = data.bootstrap;
 
     const teams =
-        data.league.standings.results;
+        leagueData.standings.results;
 
-    document.getElementById("leagueName").innerText =
-        leagueName;
+    document.getElementById("leagueName")
+        .innerText =
+        leagueData.league.name;
 
     const leader = teams[0];
 
-    document.getElementById("leader").innerHTML =
+    document.getElementById("leader")
+        .innerHTML =
         leader.entry_name +
         "<br><small>" +
         leader.total +
@@ -191,28 +211,63 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
         : b
     );
 
-    document.getElementById("gwWinner").innerHTML =
+    document.getElementById("winner")
+        .innerHTML =
         winner.entry_name +
         "<br><small>" +
         winner.event_total +
         " pts</small>";
 
-    document.getElementById("members").innerText =
+    document.getElementById("members")
+        .innerText =
         teams.length;
 
-    const samarth = teams.find(
-        team => team.player_name === "Samarth Adhikary"
-    );
+    const currentGW =
+        bootstrap.events.find(
+            e => e.is_current
+        );
 
-    if(samarth){
+    if(currentGW){
 
-        document.getElementById("myTeam").innerHTML =
-        "<strong>" + samarth.entry_name + "</strong><br>" +
-        "Rank: " + samarth.rank + "<br>" +
-        "Points: " + samarth.total;
+        document.getElementById("gw")
+        .innerText =
+        "GW " + currentGW.id;
     }
 
-    let html = "";
+    const nextGW =
+        bootstrap.events.find(
+            e => e.is_next
+        );
+
+    if(nextGW){
+
+        document.getElementById("deadline")
+        .innerText =
+        new Date(
+            nextGW.deadline_time
+        ).toLocaleString();
+    }
+
+    const myTeam =
+        teams.find(
+            x => x.player_name ===
+            "Samarth Adhikary"
+        );
+
+    if(myTeam){
+
+        document.getElementById("myTeam")
+        .innerHTML =
+        "<strong>" +
+        myTeam.entry_name +
+        "</strong><br>Rank " +
+        myTeam.rank +
+        "<br>" +
+        myTeam.total +
+        " pts";
+    }
+
+    let rows = "";
 
     teams.forEach(team => {
 
@@ -220,67 +275,67 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
         let moveClass = "same";
 
         if(team.rank < team.last_rank){
+
             move = "▲";
             moveClass = "up";
         }
 
         if(team.rank > team.last_rank){
+
             move = "▼";
             moveClass = "down";
         }
 
         let rowClass = "";
 
-        if(team.rank === 1){
+        if(team.rank === 1)
             rowClass = "gold";
-        }
 
-        if(team.rank === 2){
+        if(team.rank === 2)
             rowClass = "silver";
-        }
 
-        if(team.rank === 3){
+        if(team.rank === 3)
             rowClass = "bronze";
-        }
 
-        html += `
+        rows += `
         <tr class="${rowClass}">
-
             <td>${team.rank}</td>
-
             <td class="${moveClass}">
                 ${move}
             </td>
-
-            <td>${team.entry_name}</td>
-
-            <td>${team.player_name}</td>
-
-            <td>${team.event_total}</td>
-
-            <td>${team.total}</td>
-
+            <td>
+                ${team.entry_name}
+            </td>
+            <td>
+                ${team.player_name}
+            </td>
+            <td>
+                ${team.event_total}
+            </td>
+            <td>
+                ${team.total}
+            </td>
         </tr>
         `;
     });
 
-    document.getElementById("tableBody").innerHTML =
-        html;
+    document.getElementById("tableBody")
+        .innerHTML = rows;
 
 })
 .catch(error => {
 
     console.log(error);
 
-    document.getElementById("tableBody").innerHTML =
-    `
-    <tr>
-        <td colspan="6">
-            Error loading FPL data.
-        </td>
-    </tr>
-    `;
-
+    document.getElementById("tableBody")
+        .innerHTML =
+        `
+        <tr>
+            <td colspan="6">
+            Error loading data
+            </td>
+        </tr>
+        `;
 });
 
 </script>
