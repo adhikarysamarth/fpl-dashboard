@@ -1,196 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Sagarmatha League</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body{
-            font-family: Arial, sans-serif;
-            margin:40px;
-            background:#f5f7fa;
-        }
+<title>Sagarmatha League</title>
 
-        h1{
-            text-align:center;
-            color:#37003c;
-        }
+<style>
 
-        .cards{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-            gap:20px;
-            margin-bottom:30px;
-        }
+body{
+    margin:0;
+    font-family:Segoe UI,sans-serif;
+    background:#0b1220;
+    color:white;
+}
 
-        .card{
-            background:white;
-            padding:20px;
-            border-radius:10px;
-            box-shadow:0 2px 8px rgba(0,0,0,.1);
-        }
+header{
+    background:linear-gradient(135deg,#37003c,#00ff87);
+    padding:30px;
+    text-align:center;
+}
 
-        .card h3{
-            margin-top:0;
-            color:#37003c;
-        }
+header h1{
+    margin:0;
+    font-size:42px;
+}
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-            background:white;
-        }
+.container{
+    padding:25px;
+}
 
-        th{
-            background:#37003c;
-            color:white;
-            padding:12px;
-        }
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:25px;
+}
 
-        td{
-            padding:12px;
-            border-bottom:1px solid #ddd;
-            text-align:center;
-        }
+.card{
+    background:#141d2f;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,.4);
+}
 
-        tr:hover{
-            background:#f3f3f3;
-        }
+.card h3{
+    margin-top:0;
+    color:#00ff87;
+}
 
-        .leader{
-            font-weight:bold;
-            color:green;
-        }
+.card-value{
+    font-size:22px;
+    font-weight:bold;
+}
 
-    </style>
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#141d2f;
+}
+
+th{
+    background:#37003c;
+    color:white;
+    padding:14px;
+}
+
+td{
+    padding:12px;
+    text-align:center;
+    border-bottom:1px solid #23304d;
+}
+
+tr:hover{
+    background:#1c2840;
+}
+
+.gold{
+    background:rgba(255,215,0,.15);
+}
+
+.silver{
+    background:rgba(192,192,192,.15);
+}
+
+.bronze{
+    background:rgba(205,127,50,.15);
+}
+
+.up{
+    color:#00ff87;
+    font-weight:bold;
+}
+
+.down{
+    color:#ff5858;
+    font-weight:bold;
+}
+
+.same{
+    color:#dddddd;
+}
+
+.loading{
+    text-align:center;
+    padding:50px;
+}
+
+</style>
 </head>
 
 <body>
 
-<h1 id="leagueName">Loading...</h1>
+<header>
+    <h1 id="leagueName">Loading...</h1>
+</header>
+
+<div class="container">
 
 <div class="cards">
 
     <div class="card">
         <h3>Current Leader</h3>
-        <div id="leader">Loading...</div>
+        <div class="card-value" id="leader">-</div>
     </div>
 
     <div class="card">
-        <h3>Latest GW Winner</h3>
-        <div id="gwWinner">Loading...</div>
+        <h3>Manager of the Week</h3>
+        <div class="card-value" id="gwWinner">-</div>
     </div>
 
     <div class="card">
         <h3>League Members</h3>
-        <div id="members">Loading...</div>
-    </div>
-
-    <div class="card">
-        <h3>Last Updated</h3>
-        <div id="updated">Loading...</div>
-    </div>
-
-</div>
-
-<h2>League Table</h2>
-
-<table>
-<thead>
-<tr>
-    <th>Rank</th>
-    <th>Team</th>
-    <th>Manager</th>
-    <th>GW Points</th>
-    <th>Total Points</th>
-</tr>
-</thead>
-
-<tbody id="tableBody"></tbody>
-
-</table>
-
-<script>
-
-fetch("https://fpl-api.adhikarysamarth.workers.dev/")
-.then(response => response.json())
-.then(data => {
-
-    document.getElementById("leagueName").innerText =
-        data.league.name;
-
-    const teams = data.standings.results;
-
-    const leader = teams[0];
-
-    document.getElementById("leader").innerHTML =
-        `
-        <strong>${leader.entry_name}</strong><br>
-        ${leader.player_name}<br>
-        ${leader.total} pts
-        `;
-
-    const gwWinner = teams.reduce((highest,current)=>
-        current.event_total > highest.event_total
-        ? current
-        : highest
-    );
-
-    document.getElementById("gwWinner").innerHTML =
-        `
-        <strong>${gwWinner.entry_name}</strong><br>
-        ${gwWinner.event_total} points
-        `;
-
-    document.getElementById("members").innerText =
-        teams.length;
-
-    document.getElementById("updated").innerText =
-        new Date(data.last_updated_data)
-        .toLocaleString();
-
-    let html = "";
-
-    teams.forEach(team => {
-
-        html += `
-        <tr>
-
-            <td>${team.rank}</td>
-
-            <td>
-                ${team.entry_name}
-            </td>
-
-            <td>
-                ${team.player_name}
-            </td>
-
-            <td>
-                ${team.event_total}
-            </td>
-
-            <td>
-                ${team.total}
-            </td>
-
-        </tr>
-        `;
-    });
-
-    document.getElementById("tableBody")
-        .innerHTML = html;
-
-})
-.catch(error => {
-
-    console.error(error);
-
-    document.body.innerHTML +=
-        "<h3 style='color:red'>Unable to load data</h3>";
-
-});
-
-</script>
-
-</body>
-</html>
+        <div class="card-value" id="members">-</div>
+    </div
