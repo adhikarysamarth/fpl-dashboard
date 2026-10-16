@@ -178,124 +178,27 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
 .then(res => res.json())
 .then(data => {
 
-    const league = data.league;
-    const teams = league.standings.results;
+    console.log(data);
+
+    const leagueData = data.league;
+    const teams = leagueData.standings.results;
 
     document.getElementById("leagueName").innerText =
-        league.league.name;
-
-    const leader = teams[0];
+        leagueData.league.name;
 
     document.getElementById("leader").innerHTML =
-        `
-        ${leader.entry_name}<br>
-        <small>${leader.total} pts</small>
-        `;
-
-    const managerOfWeek =
-        teams.reduce((a,b)=>
-            a.event_total > b.event_total ? a : b
-        );
-
-    document.getElementById("gwWinner").innerHTML =
-        `
-        ${managerOfWeek.entry_name}<br>
-        <small>${managerOfWeek.event_total} pts</small>
-        `;
+        teams[0].entry_name + "<br>" +
+        teams[0].total + " pts";
 
     document.getElementById("members").innerText =
         teams.length;
-
-    document.getElementById("updated").innerText =
-        new Date(league.last_updated_data)
-            .toLocaleString();
-
-    const samarth = teams.find(
-        t => t.player_name === "Samarth Adhikary"
-    );
-
-    if(samarth){
-
-        document.getElementById("myTeam").innerHTML =
-        `
-        <strong>${samarth.entry_name}</strong><br>
-        Rank #${samarth.rank}<br>
-        ${samarth.total} pts
-        `;
-    }
-
-    let html = "";
-
-    teams.forEach(team=>{
-
-        let movement = "▬";
-        let movementClass = "same";
-
-        if(team.rank < team.last_rank){
-            movement = "▲";
-            movementClass = "up";
-        }
-
-        if(team.rank > team.last_rank){
-            movement = "▼";
-            movementClass = "down";
-        }
-
-        let rowClass = "";
-
-        if(team.rank === 1)
-            rowClass = "gold";
-
-        if(team.rank === 2)
-            rowClass = "silver";
-
-        if(team.rank === 3)
-            rowClass = "bronze";
-
-        html +=
-
-        `<tr class="${rowClass}">
-
-            <td>${team.rank}</td>
-
-            <td class="${movementClass}">
-                ${movement}
-            </td>
-
-            <td>
-                ${team.entry_name}
-            </td>
-
-            <td>
-                ${team.player_name}
-            </td>
-
-            <td>
-                ${team.event_total}
-            </td>
-
-            <td>
-                ${team.total}
-            </td>
-
-        </tr>`;
-    });
-
-    document.getElementById("tableBody")
-        .innerHTML = html;
 
 })
 .catch(error => {
 
     console.error(error);
 
-    document.getElementById("tableBody")
-        .innerHTML =
-        `<tr>
-            <td colspan="6">
-                Error loading league data.
-            </td>
-        </tr>`;
+    alert(error);
 
 });
 
