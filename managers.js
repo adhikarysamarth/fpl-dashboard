@@ -60,9 +60,22 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
     });
 
     const finishedGameweeks =
-        events
-        .filter(event => event.finished)
-        .map(event => event.id);
+    [
+        ...new Set(
+
+            histories.flatMap(
+                manager =>
+
+                    (manager.history.current || [])
+                    .map(row => row.event)
+
+            )
+
+        )
+    ]
+    .sort(
+        (a,b) => b-a
+    );
 
     finishedGameweeks.forEach(gw => {
 
