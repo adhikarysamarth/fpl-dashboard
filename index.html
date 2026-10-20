@@ -1,134 +1,13 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">
 
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Sagarmatha League</title>
 
-<style>
-
-body{
-    margin:0;
-    background:#071225;
-    color:white;
-    font-family:Segoe UI,sans-serif;
-}
-
-header{
-    background:linear-gradient(135deg,#4b006e,#00ff87);
-    padding:30px;
-    text-align:center;
-}
-
-header h1{
-    margin:0;
-    font-size:48px;
-}
-
-.container{
-    padding:20px;
-}
-
-.last-updated{
-    position:fixed;
-    top:15px;
-    right:20px;
-    background:rgba(0,0,0,.4);
-    backdrop-filter:blur(8px);
-    padding:10px 15px;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,.15);
-    z-index:1000;
-    text-align:right;
-    font-size:12px;
-}
-
-.last-updated span{
-    color:#00ff87;
-    font-weight:bold;
-    display:block;
-}
-
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-    margin-bottom:30px;
-}
-
-.card{
-    background:#13203b;
-    border-radius:12px;
-    padding:20px;
-}
-
-.card h3{
-    margin-top:0;
-    color:#00ff87;
-}
-
-.big{
-    font-size:24px;
-    font-weight:bold;
-}
-
-#countdown{
-    color:#00ff87;
-    font-size:20px;
-    margin-top:10px;
-    font-weight:bold;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    background:#13203b;
-}
-
-th{
-    background:#4b006e;
-    padding:12px;
-}
-
-td{
-    padding:12px;
-    text-align:center;
-    border-bottom:1px solid #263554;
-}
-
-tr:hover{
-    background:#1d2f50;
-}
-
-.gold{
-    background:rgba(255,215,0,.15);
-}
-
-.silver{
-    background:rgba(192,192,192,.15);
-}
-
-.bronze{
-    background:rgba(205,127,50,.15);
-}
-
-.up{
-    color:#00ff87;
-    font-weight:bold;
-}
-
-.down{
-    color:#ff6a6a;
-    font-weight:bold;
-}
-
-.same{
-    color:#ddd;
-}
-
-</style>
+<link rel="stylesheet" href="./styles.css">
 
 </head>
 
@@ -139,282 +18,89 @@ tr:hover{
     <div id="lastUpdatedTop">Loading...</div>
 </div>
 
-<header>
-<h1 id="leagueName">
-Loading...
-</h1>
+<header class="hero">
+
+    <h1 id="leagueName">
+        Sagarmatha League
+    </h1>
+
+    <p>
+        Fantasy Premier League Dashboard
+    </p>
+
 </header>
 
-<div class="container">
+<nav class="navbar">
+
+    <a href="#dashboard">Dashboard</a>
+    <a href="#gw-winners">GW Winners</a>
+    <a href="#stats">Stats</a>
+
+</nav>
+
+<main class="container" id="dashboard">
 
 <div class="cards">
 
-<div class="card">
-<h3>Current Leader</h3>
-<div id="leader" class="big">-</div>
-</div>
+    <div class="card">
+        <h3>⚽ Current GW</h3>
+        <div id="gw" class="big">Loading...</div>
+    </div>
 
-<div class="card">
-<h3>Manager Of The Week</h3>
-<div id="winner" class="big">-</div>
-</div>
+    <div class="card">
+        <h3>🏆 GW Winner</h3>
+        <div id="gwWinner" class="big">Loading...</div>
+    </div>
 
-<div class="card">
-<h3>Current GW</h3>
-<div id="gw" class="big">-</div>
-</div>
-
-<div class="card">
-<h3>Next Deadline</h3>
-<div id="deadline"></div>
-<div id="countdown"></div>
-</div>
-
-<div class="card">
-<h3>League Members</h3>
-<div id="members" class="big">-</div>
-</div>
-
-<div class="card">
-<h3>Your Team</h3>
-<div id="myTeam">-</div>
-</div>
+    <div class="card">
+        <h3>⏰ Next Deadline</h3>
+        <div id="deadline"></div>
+        <div id="countdown"></div>
+    </div>
 
 </div>
 
-<h2>League Table</h2>
+<h2 class="section-title">
+🔥 Most Recent Gameweek Winner
+</h2>
 
-<table>
-
-<thead>
-<tr>
-<th>Rank</th>
-<th>Move</th>
-<th>Team</th>
-<th>Manager</th>
-<th>GW</th>
-<th>Total</th>
-</tr>
-</thead>
-
-<tbody id="tableBody">
-
-<tr>
-<td colspan="6">
+<div class="winner-card" id="recentWinner">
 Loading...
-</td>
-</tr>
-
-</tbody>
-
-</table>
-
 </div>
 
-<script>
+<h2 class="section-title">
+    Gameweek Winners
+</h2>
 
-fetch("https://fpl-api.adhikarysamarth.workers.dev/")
-.then(response => response.json())
-.then(data => {
+<div class="table-scroll" id="gw-winners">
+    <table class="winners-table">
+        <thead>
+            <tr>
+                <th>Gameweek</th>
+                <th>Winning Team</th>
+                <th>Manager</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody id="gameweekWinners">
+            <tr>
+                <td colspan="4">Loading gameweek winners...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-    const leagueData = data.league;
-    const bootstrap = data.bootstrap;
+<h2 class="section-title">
+<span id="stats"></span>
+🥇 Top 3 Managers
+</h2>
 
-    const teams =
-        leagueData.standings.results;
+<div class="top3" id="topThree">
+Loading...
+</div>
+</main>
 
-    document.getElementById("leagueName")
-        .innerText =
-        leagueData.league.name;
-
-    const leader = teams[0];
-
-    document.getElementById("leader")
-        .innerHTML =
-        leader.entry_name +
-        "<br><small>" +
-        leader.total +
-        " pts</small>";
-
-    const winner = teams.reduce((a,b)=>
-        a.event_total > b.event_total
-        ? a
-        : b
-    );
-
-    document.getElementById("winner")
-        .innerHTML =
-        winner.entry_name +
-        "<br><small>" +
-        winner.event_total +
-        " pts</small>";
-
-    document.getElementById("members")
-        .innerText =
-        teams.length;
-
-    const currentGW =
-        bootstrap.events.find(
-            e => e.is_current
-        );
-
-    if(currentGW){
-
-        document.getElementById("gw")
-        .innerText =
-        "GW " + currentGW.id;
-    }
-
-    const nextGW =
-        bootstrap.events.find(
-            e => e.is_next
-        );
-
-    if(nextGW){
-
-        const deadlineDate =
-            new Date(nextGW.deadline_time);
-
-        document.getElementById("deadline")
-        .innerText =
-        deadlineDate.toLocaleString();
-
-        function updateCountdown(){
-
-            const now = new Date();
-
-            const distance =
-                deadlineDate - now;
-
-            if(distance <= 0){
-
-                document.getElementById(
-                    "countdown"
-                ).innerHTML =
-                "⏰ Deadline Passed";
-
-                return;
-            }
-
-            const days =
-                Math.floor(distance/(1000*60*60*24));
-
-            const hours =
-                Math.floor((distance%(1000*60*60*24))
-                /(1000*60*60));
-
-            const minutes =
-                Math.floor((distance%(1000*60*60))
-                /(1000*60));
-
-            const seconds =
-                Math.floor((distance%(1000*60))
-                /1000);
-
-            document.getElementById(
-                "countdown"
-            ).innerHTML =
-            `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        updateCountdown();
-
-        setInterval(updateCountdown,1000);
-    }
-
-    const lastUpdated =
-        new Date(
-            leagueData.last_updated_data
-        ).toLocaleString();
-
-    document.getElementById(
-        "lastUpdatedTop"
-    ).innerText =
-    lastUpdated;
-
-    const myTeam =
-        teams.find(
-            x => x.player_name ===
-            "Samarth Adhikary"
-        );
-
-    if(myTeam){
-
-        document.getElementById("myTeam")
-        .innerHTML =
-        "<strong>" +
-        myTeam.entry_name +
-        "</strong><br>Rank " +
-        myTeam.rank +
-        "<br>" +
-        myTeam.total +
-        " pts";
-    }
-
-    let rows = "";
-
-    teams.forEach(team => {
-
-        let move = "▬";
-        let moveClass = "same";
-
-        if(team.rank < team.last_rank){
-
-            move = "▲";
-            moveClass = "up";
-        }
-
-        if(team.rank > team.last_rank){
-
-            move = "▼";
-            moveClass = "down";
-        }
-
-        let rowClass = "";
-
-        if(team.rank === 1)
-            rowClass = "gold";
-
-        if(team.rank === 2)
-            rowClass = "silver";
-
-        if(team.rank === 3)
-            rowClass = "bronze";
-
-        rows += `
-        <tr class="${rowClass}">
-            <td>${team.rank}</td>
-            <td class="${moveClass}">
-                ${move}
-            </td>
-            <td>${team.entry_name}</td>
-            <td>${team.player_name}</td>
-            <td>${team.event_total}</td>
-            <td>${team.total}</td>
-        </tr>
-        `;
-    });
-
-    document.getElementById("tableBody")
-        .innerHTML = rows;
-
-})
-.catch(error => {
-
-    console.log(error);
-
-    document.getElementById("tableBody")
-        .innerHTML =
-        `
-        <tr>
-            <td colspan="6">
-            Error loading data
-            </td>
-        </tr>
-        `;
-});
-
-</script>
+<script src="./app.js"></script>
 
 </body>
 </html>
