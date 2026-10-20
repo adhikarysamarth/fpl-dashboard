@@ -1,186 +1,448 @@
-*{
-    box-sizing:border-box;
+:root{
+  --bg:#060d1f;
+  --panel:#0f1b36;
+  --panel-2:#16254a;
+  --line:#243552;
+  --accent:#00ff87;
+  --accent-2:#7c3aed;
+  --text:#eef3ff;
+  --muted:#93a4c8;
+  --gold:#ffd24a;
+  --silver:#c9d3e3;
+  --bronze:#d98a4e;
 }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
 
 body{
-    margin:0;
-    font-family:Segoe UI,sans-serif;
-    background:#071225;
-    color:white;
+  margin:0;
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;
 }
 
+/* ================= HERO (real Everest photo) ================= */
 .hero{
-    text-align:center;
-    padding:60px 20px;
-    background:linear-gradient(
-        135deg,
-        #37003c,
-        #1b1147,
-        #00ff87
-    );
+  position:relative;
+  min-height:min(78vw,720px);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  text-align:left;
+  padding:90px 6vw 120px;
+  overflow:hidden;
+  background:#0b1530;
 }
+
+/* the photo */
+.hero::before{
+  content:"";
+  position:absolute;inset:0;
+  background:url("https://commons.wikimedia.org/wiki/Special:FilePath/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg?width=2000") center top/cover no-repeat;
+  transform:scale(1.04);
+}
+
+/* dark tint + fade into page background */
+.hero::after{
+  content:"";
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,transparent 55%,var(--bg) 100%),
+    linear-gradient(180deg,rgba(6,13,31,.12) 0%,rgba(6,13,31,.1) 50%,rgba(6,13,31,.35) 100%),
+    linear-gradient(90deg,rgba(6,10,28,.82) 0%,rgba(6,10,28,.55) 32%,transparent 58%);
+}
+
+.hero > *{position:relative;z-index:2}
 
 .hero h1{
-    margin:0;
-    font-size:60px;
+  margin:0 0 12px;
+  font-size:66px;
+  line-height:1.05;
+  letter-spacing:-.02em;
+  text-shadow:0 6px 30px rgba(0,0,0,.6);
+  background:linear-gradient(90deg,#fff 30%,var(--accent));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 4px 18px rgba(0,0,0,.5));
 }
 
 .hero p{
-    font-size:20px;
+  margin:0;
+  font-size:21px;
+  color:#eef1ff;
+  text-shadow:0 2px 14px rgba(0,0,0,.7);
+  letter-spacing:.04em;
 }
 
+/* ================= NAVBAR ================= */
 .navbar{
-    display:flex;
-    justify-content:center;
-    gap:40px;
-    padding:15px;
-    background:#13203b;
+  position:sticky;
+  top:0;
+  z-index:900;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  padding:12px;
+  background:rgba(15,27,54,.85);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  overflow-x:auto;
 }
 
 .navbar a{
-    color:white;
-    text-decoration:none;
-    font-weight:bold;
+  color:var(--text);
+  text-decoration:none;
+  font-weight:600;
+  font-size:15px;
+  padding:9px 20px;
+  border-radius:10px;
+  white-space:nowrap;
+  transition:background .2s,color .2s;
 }
 
 .navbar a:hover{
-    color:#00ff87;
+  color:var(--accent);
+  background:rgba(0,255,135,.08);
 }
 
+/* ================= LAYOUT ================= */
 .container{
-    max-width:1400px;
-    margin:auto;
-    padding:25px;
-}
-
-.cards{
-    display:grid;
-    grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-    margin-bottom:40px;
-}
-
-.card{
-    background:#13203b;
-    border-radius:12px;
-    padding:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,.3);
-}
-
-.card h3{
-    margin-top:0;
-    color:#00ff87;
-}
-
-.big{
-    font-size:28px;
-    font-weight:bold;
-}
-
-#countdown{
-    color:#00ff87;
-    font-size:18px;
-    margin-top:10px;
-    font-weight:bold;
-}
-
-.last-updated{
-    position:fixed;
-    right:15px;
-    top:15px;
-    background:rgba(0,0,0,.5);
-    backdrop-filter:blur(8px);
-    padding:10px 15px;
-    border-radius:10px;
-    z-index:1000;
-}
-
-.last-updated span{
-    color:#00ff87;
-    display:block;
-    font-weight:bold;
+  max-width:1400px;
+  margin:auto;
+  padding:0 25px 60px;
 }
 
 .section-title{
-    margin-bottom:20px;
+    text-align:center;
+    margin:40px auto;
+    border-left:none;
+    padding-left:0;
 }
 
+.section-title::before{
+  content:"";
+  width:6px;
+  height:30px;
+  border-radius:4px;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+}
+
+#gw-winners,#stats{scroll-margin-top:80px}
+
+/* ================= STAT CARDS ================= */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+  margin:40px 0 50px;
+  position:relative;
+  z-index:1;
+}
+
+.current-gw-value{
+    font-size:56px;
+    font-weight:800;
+    color:#00ff87;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:120px;
+    width:100%;
+}
+
+.card{
+  position:relative;
+  text-align:center;
+  overflow:hidden;
+  background:linear-gradient(160deg,var(--panel-2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:22px;
+  min-height:180px;
+  box-shadow:0 10px 30px rgba(0,0,0,.45);
+  transition:transform .25s,border-color .25s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(0,255,135,.5);
+}
+
+.card::after{
+  content:"";
+  position:absolute;
+  right:-30px;top:-30px;
+  width:110px;height:110px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(0,255,135,.18),transparent 70%);
+  pointer-events:none;
+}
+
+.card h3{
+  margin:0 0 10px;
+  color:var(--muted);
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+
+.big{
+  font-size:30px;
+  font-weight:800;
+}
+
+#deadline{
+  font-size:18px;
+  font-weight:700;
+}
+
+#countdown{
+  color:var(--accent);
+  font-size:18px;
+  margin-top:8px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ================= LAST UPDATED ================= */
+.last-updated{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:22px;
+  background:rgba(6,13,31,.55);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.2);
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:13px;
+  color:#e6ebff;
+}
+
+.last-updated span{
+  color:var(--accent);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-size:12px;
+}
+
+/* ================= NEPAL FLAG ================= */
+.nepal-flag{
+  height:96px;
+  width:auto;
+  margin-bottom:18px;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.55));
+  transform-origin:left center;
+  animation:flagWave 4s ease-in-out infinite;
+}
+
+@keyframes flagWave{
+  0%,100%{transform:perspective(400px) rotateY(0deg) skewY(0deg)}
+  50%{transform:perspective(400px) rotateY(-10deg) skewY(1.5deg)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .nepal-flag{animation:none}
+}
+
+/* ================= RECENT WINNER ================= */
 .winner-card{
-    background:#13203b;
-    border-radius:12px;
-    padding:30px;
-    margin-bottom:40px;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 90% 10%,rgba(0,255,135,.18),transparent 45%),
+    linear-gradient(160deg,var(--panel-2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:34px;
+  margin-bottom:50px;
 }
 
+.winner-name{
+    font-size:42px;
+    color:#00ff87;
+    font-weight:bold;
+    text-align:center;
+}
+
+#winnerCard,
+.winner-card{
+    text-align:center;
+}
+
+/* ================= TOP 3 PODIUM ================= */
+.top3{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+  margin-bottom:50px;
+}
+
+.podium-card{
+  background:linear-gradient(160deg,var(--panel-2),var(--panel));
+  border-radius:16px;
+  padding:28px 25px;
+  text-align:center;
+  transition:transform .25s;
+}
+
+.podium-card:hover{transform:translateY(-6px)}
+.podium-card h3{margin:0 0 6px;font-size:22px}
+
+.first{border:2px solid var(--gold);box-shadow:0 0 30px rgba(255,210,74,.18)}
+.second{border:2px solid var(--silver)}
+.third{border:2px solid var(--bronze)}
+
+/* ================= TABLE ================= */
 .table-scroll{
-    overflow-x:auto;
-    margin-bottom:40px;
-    border-radius:12px;
+  overflow-x:auto;
+  margin-bottom:50px;
+  border-radius:16px;
+  border:1px solid var(--line);
 }
 
 .winners-table{
-    width:100%;
-    border-collapse:collapse;
-    background:#13203b;
+  width:100%;
+  border-collapse:collapse;
+  background:var(--panel);
 }
 
 .winners-table th,
 .winners-table td{
-    padding:14px 18px;
-    text-align:left;
-    border-bottom:1px solid #243552;
+  padding:15px 20px;
+  text-align:left;
+  border-bottom:1px solid var(--line);
 }
 
 .winners-table th{
+  background:linear-gradient(90deg,#3b0764,#4b1d8f);
+  color:#fff;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.winners-table tbody tr{transition:background .2s}
+.winners-table tbody tr:hover{background:var(--panel-2)}
+.winners-table tbody tr:last-child td{border-bottom:none}
+
+/* ================= FOOTER ================= */
+.site-footer{
+  text-align:center;
+  padding:28px 20px;
+  color:var(--muted);
+  border-top:1px solid var(--line);
+  font-size:13px;
+}
+
+.site-footer a{color:var(--accent)}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:768px){
+  .hero{
+    min-height:560px;
+    padding:70px 18px 110px;
+    align-items:center;
+    justify-content:flex-end;
+    text-align:center;
+  }
+  .hero::after{
+    background:
+      linear-gradient(180deg,transparent 40%,var(--bg) 100%),
+      linear-gradient(180deg,rgba(6,13,31,.05) 0%,rgba(6,13,31,.55) 100%);
+  }
+  .hero h1{font-size:40px}
+  .hero p{font-size:17px}
+  .cards{grid-template-columns:1fr;margin-top:30px}
+  .navbar{justify-content:flex-start}
+  .nepal-flag{height:76px}
+  .winner-name{font-size:30px}
+}
+
+.analytics-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    background:#13203b;
+}
+
+.analytics-table th{
     background:#4b006e;
-    color:white;
+    padding:12px;
+
+    position:sticky;
+    top:0;
+    z-index:100;
+
+    box-shadow:
+    0 2px 4px rgba(0,0,0,.25);
 }
 
-.winners-table tbody tr:hover{
-    background:#1c2d4f;
+.analytics-table td{
+    padding:10px;
+    text-align:center;
+    border-bottom:1px solid #253654;
 }
 
-.winner-name{
-    font-size:34px;
+.analytics-table tr:hover{
+    background:#1d2f50;
+}
+
+.navbar a.active{
     color:#00ff87;
+    border-bottom:2px solid #00ff87;
+}
+
+#gwAverage{
+    margin-top:10px;
+    color:#00ff87;
+    font-size:14px;
+}
+
+#gwWinner{
+    line-height:1.6;
+}
+
+.analytics-table thead th{
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #4b006e;
+}
+
+.analytics-table{
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-container{
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.summary-row{
+    background:#1e2e4e;
     font-weight:bold;
 }
 
-.top3{
-    display:grid;
-    grid-template-columns:
-    repeat(auto-fit,minmax(280px,1fr));
-    gap:20px;
+.summary-row td{
+    border-top:2px solid #00ff87;
 }
 
-.podium-card{
-    background:#13203b;
-    border-radius:12px;
-    padding:25px;
+.winner-heading{
+    display:flex;
+    justify-content:center;
+    align-items:center;
     text-align:center;
-}
-
-.first{
-    border:3px solid gold;
-}
-
-.second{
-    border:3px solid silver;
-}
-
-.third{
-    border:3px solid #cd7f32;
-}
-
-@media(max-width:768px){
-
-.hero h1{
-    font-size:40px;
-}
-
-.cards{
-    grid-template-columns:1fr;
-}
-
+    width:100%;
+    font-size:2.5rem;
+    margin:30px auto;
 }
