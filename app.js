@@ -1,25 +1,59 @@
 function renderGameweekWinners(histories, events, teams) {
-    const finishedGameweeks = events
-        .filter(event => event.finished)
-        .map(event => event.id)
-        .sort((a, b) => b - a);
-    const teamByEntry = new Map(
-        teams.map(team => [team.entry, team])
+
+    const gameweeks =
+    [
+        ...new Set(
+
+            histories.flatMap(
+                manager =>
+
+                    (manager.history.current || [])
+                    .map(row => row.event)
+
+            )
+
+        )
+    ]
+    .sort(
+        (a,b) => b-a
     );
+
+    console.log(
+        "Gameweeks Used:",
+        gameweeks
+    );
+
+    const teamByEntry =
+        new Map(
+            teams.map(
+                team => [
+                    team.entry,
+                    team
+                ]
+            )
+        );
+
     const winners = [];
 
-    finishedGameweeks.forEach(gameweek => {
+    gameweeks.forEach(gameweek => {
+
         const scores = histories
             .map(manager => {
-                const result = manager.history.current.find(
-                    item => item.event === gameweek
-                );
 
-                if (!result) {
+                const result =
+                    manager.history.current.find(
+                        item =>
+                        item.event === gameweek
+                    );
+
+                if(!result){
                     return null;
                 }
 
-                const leagueTeam = teamByEntry.get(manager.entry);
+                const leagueTeam =
+                    teamByEntry.get(
+                        manager.entry
+                    );
 
                 return {
 
@@ -39,88 +73,127 @@ function renderGameweekWinners(histories, events, teams) {
 
                     points:
                         result.points -
-                        (result.event_transfers_cost || 0)
+                        (
+                            result.event_transfers_cost || 0
+                        )
 
                 };
+
             })
             .filter(Boolean);
 
-        if (scores.length === 0) {
+        if(scores.length === 0){
             return;
         }
 
         scores.sort(
-    (a,b) => b.points - a.points
-);
+            (a,b) =>
+            b.points - a.points
+        );
 
-winners.push({
+        winners.push({
 
-    gameweek,
+            gameweek,
 
-    managers: scores.slice(0,3)
+            managers:
+                scores.slice(0,3)
 
-});
-    });
-
-    const tbody = document.getElementById("gameweekWinners");
-    tbody.replaceChildren();
-
-winners.forEach(({ gameweek, managers }) => {
-
-    const row =
-        document.createElement("tr");
-
-    const first =
-        managers[0]
-        ? `${managers[0].team} (${managers[0].points})`
-        : "";
-
-    const second =
-        managers[1]
-        ? `${managers[1].team} (${managers[1].points})`
-        : "";
-
-    const third =
-        managers[2]
-        ? `${managers[2].team} (${managers[2].points})`
-        : "";
-
-    [
-
-        `GW ${gameweek}`,
-
-        first,
-
-        second,
-
-        third
-
-    ].forEach(value => {
-
-        const cell =
-            document.createElement("td");
-
-        cell.textContent =
-            value;
-
-        row.appendChild(cell);
+        });
 
     });
 
-    tbody.appendChild(row);
+    const tbody =
+        document.getElementById(
+            "gameweekWinners"
+        );
 
-});
+    if(tbody){
 
-    if (winners.length === 0) {
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
-        cell.colSpan = 4;
-        cell.textContent = "No completed gameweek results are available yet.";
-        row.appendChild(cell);
-        tbody.appendChild(row);
+        tbody.replaceChildren();
+
+        winners.forEach(
+            ({ gameweek, managers }) => {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+                const first =
+                    managers[0]
+                    ? `${managers[0].team} (${managers[0].points})`
+                    : "";
+
+                const second =
+                    managers[1]
+                    ? `${managers[1].team} (${managers[1].points})`
+                    : "";
+
+                const third =
+                    managers[2]
+                    ? `${managers[2].team} (${managers[2].points})`
+                    : "";
+
+                [
+
+                    `GW ${gameweek}`,
+
+                    first,
+
+                    second,
+
+                    third
+
+                ].forEach(value => {
+
+                    const cell =
+                        document.createElement(
+                            "td"
+                        );
+
+                    cell.textContent =
+                        value;
+
+                    row.appendChild(
+                        cell
+                    );
+
+                });
+
+                tbody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+        if(winners.length === 0){
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+            const cell =
+                document.createElement(
+                    "td"
+                );
+
+            cell.colSpan = 4;
+
+            cell.textContent =
+                "No gameweek data available.";
+
+            row.appendChild(cell);
+
+            tbody.appendChild(row);
+
+        }
+
     }
 
     return winners;
+
 }
 
 fetch("https://fpl-api.adhikarysamarth.workers.dev/")
