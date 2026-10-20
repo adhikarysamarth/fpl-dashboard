@@ -1,0 +1,186 @@
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Segoe UI,sans-serif;
+    background:#071225;
+    color:white;
+}
+
+.hero{
+    text-align:center;
+    padding:60px 20px;
+    background:linear-gradient(
+        135deg,
+        #37003c,
+        #1b1147,
+        #00ff87
+    );
+}
+
+.hero h1{
+    margin:0;
+    font-size:60px;
+}
+
+.hero p{
+    font-size:20px;
+}
+
+.navbar{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    padding:15px;
+    background:#13203b;
+}
+
+.navbar a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.navbar a:hover{
+    color:#00ff87;
+}
+
+.container{
+    max-width:1400px;
+    margin:auto;
+    padding:25px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    margin-bottom:40px;
+}
+
+.card{
+    background:#13203b;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+
+.card h3{
+    margin-top:0;
+    color:#00ff87;
+}
+
+.big{
+    font-size:28px;
+    font-weight:bold;
+}
+
+#countdown{
+    color:#00ff87;
+    font-size:18px;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+.last-updated{
+    position:fixed;
+    right:15px;
+    top:15px;
+    background:rgba(0,0,0,.5);
+    backdrop-filter:blur(8px);
+    padding:10px 15px;
+    border-radius:10px;
+    z-index:1000;
+}
+
+.last-updated span{
+    color:#00ff87;
+    display:block;
+    font-weight:bold;
+}
+
+.section-title{
+    margin-bottom:20px;
+}
+
+.winner-card{
+    background:#13203b;
+    border-radius:12px;
+    padding:30px;
+    margin-bottom:40px;
+}
+
+.table-scroll{
+    overflow-x:auto;
+    margin-bottom:40px;
+    border-radius:12px;
+}
+
+.winners-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#13203b;
+}
+
+.winners-table th,
+.winners-table td{
+    padding:14px 18px;
+    text-align:left;
+    border-bottom:1px solid #243552;
+}
+
+.winners-table th{
+    background:#4b006e;
+    color:white;
+}
+
+.winners-table tbody tr:hover{
+    background:#1c2d4f;
+}
+
+.winner-name{
+    font-size:34px;
+    color:#00ff87;
+    font-weight:bold;
+}
+
+.top3{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+
+.podium-card{
+    background:#13203b;
+    border-radius:12px;
+    padding:25px;
+    text-align:center;
+}
+
+.first{
+    border:3px solid gold;
+}
+
+.second{
+    border:3px solid silver;
+}
+
+.third{
+    border:3px solid #cd7f32;
+}
+
+@media(max-width:768px){
+
+.hero h1{
+    font-size:40px;
+}
+
+.cards{
+    grid-template-columns:1fr;
+}
+
+}
