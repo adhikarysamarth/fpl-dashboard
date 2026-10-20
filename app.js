@@ -49,30 +49,67 @@ function renderGameweekWinners(histories, events, teams) {
             return;
         }
 
-        const highestScore = Math.max(...scores.map(score => score.points));
-        winners.push({
-            gameweek,
-            managers: scores.filter(score => score.points === highestScore)
-        });
+        scores.sort(
+    (a,b) => b.points - a.points
+);
+
+winners.push({
+
+    gameweek,
+
+    managers: scores.slice(0,3)
+
+});
     });
 
     const tbody = document.getElementById("gameweekWinners");
     tbody.replaceChildren();
 
-    winners.forEach(({ gameweek, managers }) => {
-        managers.forEach(winner => {
-            const row = document.createElement("tr");
+winners.forEach(({ gameweek, managers }) => {
 
-            [ `GW ${gameweek}`, winner.team, winner.manager, `${winner.points} pts` ]
-                .forEach(value => {
-                    const cell = document.createElement("td");
-                    cell.textContent = value;
-                    row.appendChild(cell);
-                });
+    const row =
+        document.createElement("tr");
 
-            tbody.appendChild(row);
-        });
+    const first =
+        managers[0]
+        ? `${managers[0].team} (${managers[0].points})`
+        : "";
+
+    const second =
+        managers[1]
+        ? `${managers[1].team} (${managers[1].points})`
+        : "";
+
+    const third =
+        managers[2]
+        ? `${managers[2].team} (${managers[2].points})`
+        : "";
+
+    [
+
+        `GW ${gameweek}`,
+
+        first,
+
+        second,
+
+        third
+
+    ].forEach(value => {
+
+        const cell =
+            document.createElement("td");
+
+        cell.textContent =
+            value;
+
+        row.appendChild(cell);
+
     });
+
+    tbody.appendChild(row);
+
+});
 
     if (winners.length === 0) {
         const row = document.createElement("tr");
@@ -118,6 +155,96 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
         bootstrap.events.find(
             event => event.is_current
         );
+
+    if(currentGW){
+
+    const currentGWScores = [];
+
+    histories.forEach(manager => {
+
+        const result =
+            manager.history.current.find(
+                row =>
+                row.event === currentGW.id
+            );
+
+        if(!result){
+            return;
+        }
+
+        const team =
+            teams.find(
+                t => t.entry === manager.entry
+            );
+
+        currentGWScores.push({
+
+            team:
+                team?.entry_name ||
+                manager.team,
+
+            manager:
+                team?.player_name ||
+                manager.manager,
+
+            points:
+                result.points -
+                (
+                    result.event_transfers_cost || 0
+                )
+
+        });
+
+    });
+
+    currentGWScores.sort(
+        (a,b)=>
+        b.points-a.points
+    );
+
+    const leader =
+        currentGWScores[0];
+
+    const average =
+        (
+            currentGWScores.reduce(
+                (sum,row)=>
+                sum + row.points,
+                0
+            )
+            /
+            currentGWScores.length
+        ).toFixed(1);
+
+        document.getElementById(
+            "leadingGWTitle"
+        ).innerText =
+        `🔥 Leading GW ${currentGW.id}`;
+
+        document.getElementById(
+            "gwWinner"
+        ).innerHTML =
+        `
+        <strong>
+        ${leader.team}
+        </strong>
+
+        <br>
+
+        ${leader.manager}
+
+        <br>
+
+        ${leader.points} pts
+        `;
+
+        document.getElementById(
+            "gwAverage"
+        ).innerHTML =
+        `
+        League Avg: ${average} pts
+        `;
+    }
 
     if(currentGW){
 
@@ -206,39 +333,41 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
 const latestWinner =
     gameweekWinners[0];
 
-if (latestWinner) {
+if(latestWinner){
 
-    const teamNames =
-        latestWinner.managers
-        .map(manager => manager.team)
-        .join(", ");
+    const winner =
+        latestWinner.managers[0];
 
-    const managerNames =
-        latestWinner.managers
-        .map(manager => manager.manager)
-        .join(", ");
+    const teamName =
+        winner.team;
+
+    const managerName =
+        winner.manager;
 
     const winningPoints =
-        latestWinner.managers[0].points;
+        winner.points;
 
     document.getElementById(
         "recentWinner"
     ).innerHTML =
     `
     <div class="winner-name">
-        ${teamNames}
+        🔥 ${teamName} 🔥
     </div>
 
     <h3>
-        ${managerNames}
+        ${managerName}
     </h3>
 
     <p>
-        Won GW ${latestWinner.gameweek}
-        with
+        GW ${latestWinner.gameweek}
+
+        <br><br>
+
         <strong>
-            ${winningPoints} net points
+            ${winningPoints} Net Points
         </strong>
+
     </p>
     `;
 }
@@ -247,113 +376,109 @@ const winCounts = {};
 
 gameweekWinners.forEach(gw => {
 
+    const winner = gw.managers[0];
+
+    if(!winner){
+        return;
+    }
+
+    winCounts[winner.team] =
+        (winCounts[winner.team] || 0) + 1;
+
+});
+
+const uniqueWinners =
+    Object.keys(winCounts).length;
+
+const mostWins =
+    Object.entries(winCounts)
+    .sort((a,b) => b[1] - a[1])[0];
+
+let highestScore = 0;
+
+let highestScoreTeam = "";
+
+let highestScoreManager = "";
+
+let highestScoreGW = "";
+
+gameweekWinners.forEach(gw => {
+
     gw.managers.forEach(manager => {
 
-        const teamName = manager.team;
+        if(manager.points > highestScore){
 
-        winCounts[teamName] =
-            (winCounts[teamName] || 0) + 1;
+            highestScore =
+                manager.points;
+
+            highestScoreTeam =
+                manager.team;
+
+            highestScoreManager =
+                manager.manager;
+
+            highestScoreGW =
+                gw.gameweek;
+
+        }
 
     });
 
 });
 
-const topManagers =
-    Object.entries(winCounts)
-    .map(([team, wins]) => ({
-        team,
-        wins
-    }))
-    .sort((a, b) => b.wins - a.wins);
-
-if(topManagers.length > 0){
-
-    const leader = topManagers[0];
-
-    let leaderManager = "";
-
-    gameweekWinners.forEach(gw => {
-
-        gw.managers.forEach(manager => {
-
-            if(
-                manager.team === leader.team &&
-                !leaderManager
-            ){
-                leaderManager =
-                    manager.manager;
-            }
-
-        });
-
-    });
-
-    document.getElementById(
-        "gwWinner"
-    ).innerHTML =
-    `
-    <strong>
-        ${leader.team}
-    </strong>
-
-    <br>
-
-    <small>
-        ${leaderManager}
-    </small>
-
-    <br>
-
-    (${leader.wins} Wins)
-    `;
-}
-
-const topThree =
-    topManagers.slice(0,3);
+const averageWinnerScore =
+(
+    gameweekWinners.reduce(
+        (sum,gw) =>
+        sum + gw.managers[0].points,
+        0
+    )
+    /
+    gameweekWinners.length
+).toFixed(1);
 
 document.getElementById(
-    "topThree"
+    "seasonSnapshot"
 ).innerHTML =
 
-topThree.map((manager,index)=>`
-
-<div class="podium-card ${
-    index === 0
-        ? "first"
-        : index === 1
-        ? "second"
-        : "third"
-}">
-
-    <h3>
-
-        ${
-            index === 0
-                ? "🥇 First Place"
-                : index === 1
-                ? "🥈 Second Place"
-                : "🥉 Third Place"
-        }
-
-    </h3>
-
-    <h2>
-        ${manager.team}
-    </h2>
-
-    <h3>
-        ${manager.wins}
-        GW Wins
-    </h3>
-
+`
+<div class="podium-card">
+<h3>Completed GWs</h3>
+<h2>${gameweekWinners.length}</h2>
 </div>
 
-`).join("");
+<div class="podium-card">
+<h3>Unique Winners</h3>
+<h2>${uniqueWinners}</h2>
+</div>
+
+<div class="podium-card">
+    <h3>Highest Net Score</h3>
+    <h2>${highestScore}</h2>
+    <small>${highestScoreTeam}</small> |
+    <small>${highestScoreManager}</small> |
+    <small>
+    GW ${highestScoreGW}
+    </small>
+</div>
+
+<div class="podium-card">
+<h3>Most GW Wins</h3>
+<h2>${mostWins[0]} | ${mostWins[1]} wins</h2>
+</div>
+
+<div class="podium-card">
+<h3>Avg Winner Score</h3>
+<h2>${averageWinnerScore}</h2>
+</div>
+`;
 
 })
 .catch(error => {
 
-    console.error(error);
+    console.error("REAL ERROR:", error);
+
+    alert(error);
 
     document.getElementById("gwWinner").textContent =
         "Unable to load gameweek winner";
