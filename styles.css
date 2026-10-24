@@ -1,0 +1,596 @@
+:root{
+  --bg:#f5f2ec;
+  --panel:#ffffff;
+  --panel-2:#fbf8f3;
+  --line:#e6dfd3;
+  --accent:#c8102e;      /* crimson */
+  --accent-2:#003893;    /* deep blue */
+  --accent-soft:rgba(200,16,46,.08);
+  --text:#14213d;
+  --muted:#5f6b85;
+  --gold:#e0a100;
+  --silver:#8d99ae;
+  --bronze:#b8692f;
+  --radius:18px;
+  --shadow:0 8px 28px rgba(20,33,61,.08);
+  --shadow-hover:0 16px 40px rgba(20,33,61,.14);
+  --font:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  font-family:var(--font);
+  color:var(--text);
+  line-height:1.55;
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3{letter-spacing:-.01em}
+
+::selection{background:var(--accent);color:#fff}
+
+/* ================= HERO ================= */
+.hero{
+  position:relative;
+  min-height:min(60vw,560px);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  text-align:left;
+  padding:80px 7vw 110px;
+  overflow:hidden;
+  background:#1b2742;
+}
+
+.hero::before{
+  content:"";
+  position:absolute;inset:0;
+  background:url("https://commons.wikimedia.org/wiki/Special:FilePath/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg?width=2000") center top/cover no-repeat;
+  transform:scale(1.04);
+}
+
+.hero::after{
+  content:"";
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,transparent 60%,var(--bg) 100%),
+    linear-gradient(90deg,rgba(10,18,40,.82) 0%,rgba(10,18,40,.5) 36%,transparent 65%);
+}
+
+.hero > *{position:relative;z-index:2}
+
+.hero h1{
+  margin:0 0 12px;
+  font-size:clamp(38px,6vw,68px);
+  font-weight:800;
+  line-height:1.05;
+  letter-spacing:-.03em;
+  color:#fff;
+  -webkit-text-fill-color:#fff;
+  background:none;
+  text-shadow:0 4px 24px rgba(0,0,0,.45);
+}
+
+.hero p{
+  margin:0;
+  font-size:clamp(15px,2vw,19px);
+  font-weight:600;
+  color:#ffe3e7;
+  text-shadow:0 2px 12px rgba(0,0,0,.6);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+/* ================= NAVBAR ================= */
+.navbar{
+  position:sticky;
+  top:0;
+  z-index:900;
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  box-shadow:0 2px 14px rgba(20,33,61,.06);
+  overflow-x:auto;
+}
+
+.navbar a{
+  color:var(--muted);
+  text-decoration:none;
+  font-weight:600;
+  font-size:15px;
+  padding:9px 22px;
+  border-radius:999px;
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:background .2s,color .2s;
+}
+
+.navbar a:hover{
+  color:var(--accent);
+  background:var(--accent-soft);
+}
+
+.navbar a.active{
+  color:#fff;
+  background:var(--accent);
+  border-bottom:2px solid transparent;
+  box-shadow:0 4px 14px rgba(200,16,46,.3);
+}
+
+/* ================= LAYOUT ================= */
+.container{
+  max-width:1240px;
+  margin:auto;
+  padding:0 24px 70px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  text-align:center;
+  font-size:clamp(22px,3vw,30px);
+  font-weight:800;
+  color:var(--text);
+  margin:56px auto 26px;
+  padding-left:0;
+  border-left:none;
+}
+
+.section-title::before{
+  content:"";
+  display:inline-block;
+  width:6px;
+  height:28px;
+  border-radius:4px;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+}
+
+#gw-winners,#stats{scroll-margin-top:80px}
+
+/* ================= STAT CARDS ================= */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:22px;
+  margin:36px 0 10px;
+  position:relative;
+  z-index:1;
+}
+
+.card{
+  position:relative;
+  text-align:center;
+  overflow:hidden;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px 22px 24px;
+  min-height:190px;
+  box-shadow:var(--shadow);
+  transition:transform .25s,box-shadow .25s,border-color .25s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--shadow-hover);
+  border-color:rgba(200,16,46,.35);
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;
+  height:4px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+}
+
+.card::after{display:none}
+
+.card h3{
+  margin:0 0 12px;
+  color:var(--muted);
+  font-size:12.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+}
+
+.current-gw-value{
+  font-size:64px;
+  font-weight:800;
+  color:var(--accent);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:120px;
+  width:100%;
+}
+
+.big{
+  font-size:26px;
+  font-weight:800;
+  color:var(--text);
+  line-height:1.35;
+}
+
+#deadline{
+  font-size:18px;
+  font-weight:700;
+  color:var(--text);
+}
+
+#countdown{
+  display:inline-block;
+  color:var(--accent);
+  background:var(--accent-soft);
+  border:1px solid rgba(200,16,46,.22);
+  padding:6px 16px;
+  border-radius:999px;
+  font-size:17px;
+  margin-top:12px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+#countdown:empty{display:none}
+
+#gwAverage{
+  margin-top:10px;
+  color:var(--accent-2);
+  font-size:14px;
+  font-weight:600;
+}
+
+#gwWinner{line-height:1.5}
+
+/* ================= LAST UPDATED ================= */
+.last-updated{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin-top:24px;
+  background:rgba(255,255,255,.14);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.35);
+  padding:8px 18px;
+  border-radius:999px;
+  font-size:13px;
+  color:#fff;
+}
+
+.last-updated::before{
+  content:"";
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#4ade80;
+  box-shadow:0 0 10px #4ade80;
+  animation:pulse 2s ease-in-out infinite;
+}
+
+.last-updated span{
+  color:#ffd0d7;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  font-size:12px;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.45;transform:scale(.8)}
+}
+
+/* ================= NEPAL FLAG ================= */
+.nepal-flag{
+  height:92px;
+  width:auto;
+  margin-bottom:18px;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.5));
+  transform-origin:left center;
+  animation:flagWave 4s ease-in-out infinite;
+}
+
+@keyframes flagWave{
+  0%,100%{transform:perspective(400px) rotateY(0deg) skewY(0deg)}
+  50%{transform:perspective(400px) rotateY(-10deg) skewY(1.5deg)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .nepal-flag,.last-updated::before{animation:none}
+  html{scroll-behavior:auto}
+}
+
+/* ================= RECENT WINNER ================= */
+.winner-card{
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+  background:
+    radial-gradient(circle at 92% 8%,rgba(200,16,46,.10),transparent 45%),
+    radial-gradient(circle at 4% 100%,rgba(0,56,147,.10),transparent 45%),
+    var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:38px 28px;
+  margin-bottom:50px;
+  box-shadow:var(--shadow);
+}
+
+.winner-card::before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:5px;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+}
+
+.winner-name{
+  font-size:clamp(30px,5vw,46px);
+  color:var(--accent);
+  font-weight:800;
+  text-align:center;
+}
+
+#winnerCard{text-align:center}
+
+.winner-heading{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  width:100%;
+  font-size:2.5rem;
+  margin:30px auto;
+}
+
+/* ================= TOP 3 PODIUM ================= */
+.top3{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:22px;
+  margin-bottom:50px;
+}
+
+.podium-card{
+  background:var(--panel);
+  color:var(--text);
+  border-radius:var(--radius);
+  padding:30px 25px;
+  text-align:center;
+  box-shadow:var(--shadow);
+  transition:transform .25s,box-shadow .25s;
+}
+
+.podium-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-hover)}
+.podium-card h3{margin:0 0 8px;font-size:22px}
+
+.first{border:2px solid var(--gold);background:linear-gradient(180deg,#fff8e1,#fff 60%)}
+.second{border:2px solid var(--silver);background:linear-gradient(180deg,#eef1f6,#fff 60%)}
+.third{border:2px solid var(--bronze);background:linear-gradient(180deg,#fbeee3,#fff 60%)}
+
+/* ================= TABLES (shared) ================= */
+.table-scroll{
+  overflow-x:auto;
+  margin-bottom:50px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  background:var(--panel);
+}
+
+.winners-table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--panel);
+  color:var(--text);
+}
+
+.winners-table th,
+.winners-table td{
+  padding:15px 20px;
+  text-align:left;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+
+.winners-table th{
+  background:linear-gradient(90deg,#002a73,var(--accent-2));
+  color:#fff;
+  font-size:12.5px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+
+.winners-table tbody tr:nth-child(even){background:var(--panel-2)}
+.winners-table tbody tr{transition:background .2s}
+.winners-table tbody tr:hover{background:var(--accent-soft)}
+.winners-table tbody tr:last-child td{border-bottom:none}
+.winners-table td:first-child{font-weight:800;color:var(--accent)}
+
+/* ================= MANAGERS ANALYTICS TABLE ================= */
+.table-container{
+  max-height:75vh;
+  overflow:auto;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  background:var(--panel);
+}
+
+.analytics-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:var(--panel);
+  color:var(--text);
+  font-variant-numeric:tabular-nums;
+}
+
+.analytics-table th,
+.analytics-table thead th{
+  background:linear-gradient(90deg,#002a73,var(--accent-2));
+  color:#fff;
+  padding:14px 12px;
+  font-size:12.5px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 2px 6px rgba(20,33,61,.18);
+  white-space:nowrap;
+}
+
+.analytics-table td{
+  padding:12px;
+  text-align:center;
+  border-bottom:1px solid var(--line);
+}
+
+.analytics-table td:first-child,
+.analytics-table th:first-child{text-align:left;padding-left:20px;font-weight:700}
+
+.analytics-table td:nth-child(2){text-align:left;color:var(--muted)}
+
+.analytics-table tbody tr:nth-child(even){background:var(--panel-2)}
+.analytics-table tbody tr{transition:background .2s}
+.analytics-table tr:hover{background:var(--accent-soft)}
+
+.summary-row{
+  background:#eef2fb;
+  font-weight:700;
+}
+
+.summary-row td{
+  border-top:2px solid var(--accent);
+}
+
+/* ---- Managers table: column polish ---- */
+.analytics-table th:nth-child(2){text-align:left}
+.analytics-table td:nth-child(2){font-weight:500}
+
+/* BB / TC chip usage */
+.analytics-table td:nth-child(3),
+.analytics-table td:nth-child(4){
+  font-weight:800;
+  color:var(--accent-2);
+}
+
+/* 1st = gold */
+.analytics-table thead th:nth-child(5){
+  background:linear-gradient(180deg,#ffd75e,#e0a100);
+  color:#4a3200;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+}
+.analytics-table td:nth-child(5){
+  color:#a87400;
+  font-weight:800;
+  background-image:linear-gradient(rgba(224,161,0,.12),rgba(224,161,0,.12));
+}
+
+/* 2nd = silver */
+.analytics-table thead th:nth-child(6){
+  background:linear-gradient(180deg,#e8edf3,#a9b4c4);
+  color:#2b3548;
+  text-shadow:0 1px 0 rgba(255,255,255,.45);
+}
+.analytics-table td:nth-child(6){
+  color:#5d6b82;
+  font-weight:800;
+  background-image:linear-gradient(rgba(141,153,174,.16),rgba(141,153,174,.16));
+}
+
+/* 3rd = bronze */
+.analytics-table thead th:nth-child(7){
+  background:linear-gradient(180deg,#e0955a,#a85d27);
+  color:#fff;
+  text-shadow:0 1px 1px rgba(60,25,0,.35);
+}
+.analytics-table td:nth-child(7){
+  color:#a85d27;
+  font-weight:800;
+  background-image:linear-gradient(rgba(184,105,47,.14),rgba(184,105,47,.14));
+}
+
+/* Top 3 = bold, standout column */
+.analytics-table td:nth-child(8){
+  font-weight:800;
+  font-size:1.05em;
+  color:var(--accent);
+  background-image:linear-gradient(rgba(200,16,46,.06),rgba(200,16,46,.06));
+  border-left:1px solid var(--line);
+}
+.analytics-table thead th:nth-child(8){
+  background:linear-gradient(90deg,#a30d26,var(--accent));
+  font-weight:800;
+}
+
+/* Avg pts */
+.analytics-table td:nth-child(9){
+  font-weight:700;
+  color:var(--accent-2);
+  border-left:1px solid var(--line);
+}
+
+.analytics-table td:nth-child(n+3):not(:empty){font-variant-numeric:tabular-nums}
+
+.analytics-table tbody tr:hover td{box-shadow:inset 0 0 0 9999px rgba(200,16,46,.03)}
+
+.container > h2:not(.section-title){
+  font-size:clamp(22px,3vw,30px);
+  font-weight:800;
+  margin:44px 0 22px;
+  text-align:center;
+}
+
+/* ================= FOOTER ================= */
+.site-footer{
+  text-align:center;
+  padding:30px 20px;
+  color:var(--muted);
+  border-top:1px solid var(--line);
+  font-size:13px;
+  background:#fff;
+}
+
+.site-footer a{color:var(--accent-2);text-decoration:none;font-weight:600}
+.site-footer a:hover{text-decoration:underline}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:768px){
+  .hero{
+    min-height:460px;
+    padding:60px 20px 100px;
+    align-items:center;
+    justify-content:flex-end;
+    text-align:center;
+  }
+  .hero::after{
+    background:
+      linear-gradient(180deg,transparent 45%,var(--bg) 100%),
+      linear-gradient(180deg,rgba(10,18,40,.1) 0%,rgba(10,18,40,.6) 100%);
+  }
+  .hero p{letter-spacing:.08em}
+  .cards{grid-template-columns:1fr;margin-top:28px}
+  .container{padding:0 14px 50px}
+  .navbar{justify-content:flex-start}
+  .nepal-flag{height:72px;transform-origin:center}
+  .winner-name{font-size:30px}
+  .current-gw-value{font-size:54px;height:100px}
+  .winners-table th,.winners-table td{padding:12px 14px}
+  .analytics-table td{padding:10px 8px}
+}

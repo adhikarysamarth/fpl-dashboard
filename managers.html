@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managers Analytics | Sagarmatha League</title>
+<meta name="theme-color" content="#060d1f">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header class="hero">
+    <h1>Sagarmatha League</h1>
+    <p>Performance Metrics for All Managers</p>
+</header>
+
+<nav class="navbar">
+    <a href="index.html">Dashboard</a>
+    <a href="managers.html" class="active">Manager Stats</a>
+</nav>
+
+<div class="container">
+
+<h2 class="section-title">📈 Managers Summary</h2>
+
+<div class="table-container">
+<table class="analytics-table">
+
+<thead>
+<tr>
+    <th>Player</th>
+    <th>Team</th>
+    <th>BB</th>
+    <th>TC</th>
+    <th>1st</th>
+    <th>2nd</th>
+    <th>3rd</th>
+    <th>Top 3</th>
+    <th>Avg Pts</th>
+</tr>
+</thead>
+
+<tbody id="managersTable">
+<tr>
+<td colspan="9">
+Loading Analytics...
+</td>
+</tr>
+</tbody>
+
+</table>
+</div>
+
+</div>
+
+<footer class="site-footer">
+    Hero photo: Mount Everest north face by
+    <a href="https://commons.wikimedia.org/wiki/File:Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg">Luca Galuzzi</a>,
+    <a href="https://creativecommons.org/licenses/by-sa/2.5/">CC BY-SA 2.5</a>
+</footer>
+
+<script src="managers.js"></script>
+
+</body>
+</html>
