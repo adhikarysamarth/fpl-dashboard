@@ -548,7 +548,7 @@ document.getElementById(
 
     alert(error);
 
-    document.getElementById("gwWinner").textContent =
+    document.getElementById("leadingGW").textContent =
         "Unable to load gameweek winner";
     document.getElementById("recentWinner").textContent =
         "Unable to load gameweek results. Check the API connection and try again.";
