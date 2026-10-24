@@ -282,23 +282,27 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
         document.getElementById(
             "leadingGWTitle"
         ).innerText =
-        `🔥 Leading GW ${currentGW.id}`;
+        `🔥 Leading GW ${currentGW.id} 🔥`;
 
         document.getElementById(
-            "gwWinner"
+            "leadingGW"
         ).innerHTML =
         `
-        <strong>
-        ${leader.team}
-        </strong>
+        <span style="color:#dc2626;font-weight:800;">
+            "${leader.team}"
+        </span>
 
         <br>
 
-        ${leader.manager}
+        <span style="color:#111827;">
+            ${leader.manager}
+        </span>
 
         <br>
 
-        ${leader.points} pts
+        <span style="color:#111827;font-weight:700;">
+            ${leader.points} pts
+        </span>
         `;
 
         document.getElementById(
@@ -328,18 +332,18 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
             new Date(
                 nextGW.deadline_time
             );
-
+            
         const deadlineTitle =
             document.getElementById(
-                "deadlineTitle"
-            );
+        "deadlineTitle"
+    );
 
-        if(deadlineTitle){
+    if(deadlineTitle){
 
-            deadlineTitle.innerText =
-            `⏰ GW ${nextGW.id} Deadline`;
+    deadlineTitle.innerText =
+    `⏰ GW ${nextGW.id} Deadline`;
 
-        }
+}
 
         document.getElementById(
             "deadline"
@@ -431,19 +435,8 @@ if(latestWinner){
     </div>
 
     <h3>
-        ${managerName}
+        ${managerName} | GW ${latestWinner.gameweek} | ${winningPoints} Net Points
     </h3>
-
-    <p>
-        GW ${latestWinner.gameweek}
-
-        <br><br>
-
-        <strong>
-            ${winningPoints} Net Points
-        </strong>
-
-    </p>
     `;
 }
 
@@ -519,17 +512,17 @@ document.getElementById(
 `
 <div class="podium-card">
 <h3>Completed GWs</h3>
-<h2>${gameweekWinners.length}</h2>
+<h2 class = "statpts">${gameweekWinners.length}</h2>
 </div>
 
 <div class="podium-card">
 <h3>Unique Winners</h3>
-<h2>${uniqueWinners}</h2>
+<h2 class = "statpts">${uniqueWinners}</h2>
 </div>
 
 <div class="podium-card">
     <h3>Highest Net Score</h3>
-    <h2>${highestScore}</h2>
+    <h2 class = "statpts">${highestScore}</h2>
     <small>${highestScoreTeam}</small> |
     <small>${highestScoreManager}</small> |
     <small>
@@ -539,12 +532,12 @@ document.getElementById(
 
 <div class="podium-card">
 <h3>Most GW Wins</h3>
-<h2>${mostWins[0]} | ${mostWins[1]} wins</h2>
+<h2 class = "statpts">${mostWins[0]} | ${mostWins[1]} wins</h2>
 </div>
 
 <div class="podium-card">
 <h3>Avg Winner Score</h3>
-<h2>${averageWinnerScore}</h2>
+<h2 class = "statpts">${averageWinnerScore}</h2>
 </div>
 `;
 

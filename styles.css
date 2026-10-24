@@ -47,6 +47,13 @@ h1,h2,h3{letter-spacing:-.01em}
   background:#1b2742;
 }
 
+.flag{
+  width:120px;
+  height:auto;
+  margin-bottom:18px;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.5));
+}
+
 .hero::before{
   content:"";
   position:absolute;inset:0;
@@ -148,14 +155,14 @@ h1,h2,h3{letter-spacing:-.01em}
   border-left:none;
 }
 
-.section-title::before{
+/*.section-title::before{
   content:"";
   display:inline-block;
   width:6px;
   height:28px;
   border-radius:4px;
   background:linear-gradient(180deg,var(--accent),var(--accent-2));
-}
+}*/
 
 #gw-winners,#stats{scroll-margin-top:80px}
 
@@ -358,11 +365,16 @@ h1,h2,h3{letter-spacing:-.01em}
 }
 
 /* ================= TOP 3 PODIUM ================= */
-.top3{
+.stats{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
   gap:22px;
   margin-bottom:50px;
+}
+
+.statpts{
+    color:#067d92;
+    font-weight:800;
 }
 
 .podium-card{

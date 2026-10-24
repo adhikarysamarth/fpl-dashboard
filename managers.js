@@ -164,6 +164,11 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
             wins:
                 row.first,
 
+            moneyWon:
+            (row.first * 70) +
+            (row.second * 50) +
+            (row.third * 30),
+
             avgPoints:
                 (
 
@@ -217,6 +222,14 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
             <td>${row.third || ""}</td>
 
             <td>${row.top3 || ""}</td>
+
+            <td class="money-cell">
+            ${
+                row.moneyWon > 0
+                    ? `$${row.moneyWon}`
+                    : ""
+            }
+            </td>
 
             <td>${row.avgPoints}</td>
 
