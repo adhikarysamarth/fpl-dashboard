@@ -606,3 +606,28 @@ h1,h2,h3{letter-spacing:-.01em}
   .winners-table th,.winners-table td{padding:12px 14px}
   .analytics-table td{padding:10px 8px}
 }
+
+/* ================= RULES CARD ================= */
+.rules-card{
+    background:white;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    line-height:1.8;
+}
+
+.rules-card h2{
+    color:#0f3d91;
+    margin-top:25px;
+}
+
+.rules-card hr{
+    margin:25px 0;
+    border:none;
+    border-top:1px solid #ddd;
+}
+
+.rules-card ul,
+.rules-card ol{
+    margin-left:25px;
+}

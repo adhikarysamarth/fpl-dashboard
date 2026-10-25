@@ -61,27 +61,30 @@ function renderGameweekWinners(histories, events, teams) {
 
                 return {
 
-                    team:
-                        leagueTeam?.entry_name ??
-                        manager.team,
+            team:
+                leagueTeam?.entry_name ??
+                manager.team,
 
-                    manager:
-                        leagueTeam?.player_name ??
-                        manager.manager,
+            manager:
+                leagueTeam?.player_name ??
+                manager.manager,
 
-                    grossPoints:
-                        result.points,
+            grossPoints:
+                result.points,
 
-                    transferCost:
-                        result.event_transfers_cost || 0,
+            transferCost:
+                result.event_transfers_cost || 0,
 
-                    points:
-                        result.points -
-                        (
-                            result.event_transfers_cost || 0
-                        )
+            benchPoints:
+                result.points_on_bench || 0,
 
-                };
+            points:
+                result.points -
+                (
+                    result.event_transfers_cost || 0
+                )
+
+        };
 
             })
             .filter(Boolean);
@@ -90,9 +93,28 @@ function renderGameweekWinners(histories, events, teams) {
             return;
         }
 
+        // League Ranking Rules
+        // 1. Net Points
+        // 2. Bench Points (Tie-breaker)
         scores.sort(
-            (a,b) =>
-            b.points - a.points
+            (a,b) => {
+
+                if(
+                    b.points !== a.points
+                ){
+
+                    return (
+                        b.points - a.points
+                    );
+
+                }
+
+                return (
+                    b.benchPoints -
+                    a.benchPoints
+                );
+
+            }
         );
 
         winners.push({

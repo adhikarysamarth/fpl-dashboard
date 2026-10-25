@@ -52,7 +52,7 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
             first:0,
             second:0,
             third:0,
-
+            bestFinish:999,
             totalNetPoints:0,
             completedWeeks:0
         };
@@ -109,7 +109,10 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
                     week.points -
                     (
                         week.event_transfers_cost || 0
-                    )
+                    ),
+
+                benchPoints:
+                    week.points_on_bench || 0
 
             });
 
@@ -128,25 +131,62 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
 
         });
 
+        // League Ranking Rules
+        // 1. Net Points
+        // 2. Bench Points (Tie-breaker)
         rankings.sort(
-            (a,b)=>
-            b.points-a.points
+            (a,b) => {
+
+                if (
+                    b.points !== a.points
+                ) {
+
+                    return (
+                        b.points - a.points
+                    );
+
+                }
+
+                return (
+                    b.benchPoints -
+                    a.benchPoints
+                );
+
+            }
         );
 
-        if(rankings[0])
-            analytics[
-                rankings[0].team
-            ].first++;
 
-        if(rankings[1])
-            analytics[
-                rankings[1].team
-            ].second++;
+rankings.forEach((entry,index) => {
 
-        if(rankings[2])
+    const finish =
+        index + 1;
+
+    analytics[
+        entry.team
+    ].bestFinish =
+        Math.min(
             analytics[
-                rankings[2].team
-            ].third++;
+                entry.team
+            ].bestFinish,
+            finish
+        );
+
+});
+
+    if(rankings[0])
+        analytics[
+            rankings[0].team
+        ].first++;
+
+    if(rankings[1])
+        analytics[
+            rankings[1].team
+        ].second++;
+
+    if(rankings[2])
+        analytics[
+            rankings[2].team
+        ].third++;
 
     });
 
@@ -155,6 +195,17 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
         .map(row => ({
 
             ...row,
+
+            bestFinish:
+                row.bestFinish === 1
+                ? "🥇"
+                : row.bestFinish === 2
+                ? "🥈"
+                : row.bestFinish === 3
+                ? "🥉"
+                : row.bestFinish === 999
+                ? ""
+                : `${row.bestFinish}th`,
 
             top3:
                 row.first +
@@ -169,7 +220,7 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
             (row.second * 50) +
             (row.third * 30),
 
-            avgPoints:
+            /*avgPoints:
                 (
 
                     row.totalNetPoints /
@@ -181,7 +232,7 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
 
                 )
                 .toFixed(1)
-
+            */
         }))
         .sort(
             (a,b)=>
@@ -221,6 +272,8 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
 
             <td>${row.third || ""}</td>
 
+            <td>${row.bestFinish}</td>
+
             <td>${row.top3 || ""}</td>
 
             <td class="money-cell">
@@ -230,8 +283,6 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
                     : ""
             }
             </td>
-
-            <td>${row.avgPoints}</td>
 
         </tr>
 
