@@ -7,7 +7,7 @@
 
 <title>Sagarmatha League</title>
 <meta name="description" content="Sagarmatha League – Fantasy Premier League dashboard with gameweek winners and season stats.">
-<meta name="theme-color" content="#060d1f">
+<meta name="theme-color" content="#0b2a6f">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,16 +20,11 @@
 
 <header class="hero">
 
-    <!-- Flag of Nepal -->
-    <img src = "images/Flag_of_Nepal.gif" alt = "Flag of Nepal" class="flag">
+    <img src="images/Flag_of_Nepal.gif" alt="Flag of Nepal" class="flag">
 
-    <h1 id="leagueName">
-        Sagarmatha League
-    </h1>
+    <h1 id="leagueName">Sagarmatha League</h1>
 
-    <p>
-        Fantasy Premier League Dashboard
-    </p>
+    <p>Fantasy Premier League Dashboard</p>
 
     <div class="last-updated">
         <span>Last Updated</span>
@@ -49,51 +44,38 @@
 <div class="cards">
 
     <div class="card">
-        <h3>⚽ Current GW ⚽</h3>
-        <div id="gw" class="current-gw-value">
-        Loading...
-        </div>
+        <h3>Current Gameweek</h3>
+        <div id="gw" class="current-gw-value">Loading...</div>
     </div>
 
     <div class="card">
-        <h3 id="leadingGWTitle">🔥 Leading GW 🔥</h3>
-        <div id="leadingGW" class="big">
-        Loading...
-        </div>
-
-        <div id="gwAverage">
-        Loading...
-        </div>
+        <h3 id="leadingGWTitle">Leading Gameweek</h3>
+        <div id="leadingGW" class="big">Loading...</div>
+        <div id="gwAverage">Loading...</div>
     </div>
 
     <div class="card">
-        <h2 id="deadlineTitle">⏰ Next Deadline</h2>
+        <h3 id="deadlineTitle">Next Deadline</h3>
         <div id="deadline"></div>
         <div id="countdown"></div>
     </div>
 
 </div>
 
-<h2 class="section-title" id="winners-heading">
-🏆 Recent GW Winner 🏆
-</h2>
+<h2 class="section-title" id="gwResultsTitle">Gameweek Results</h2>
 
-<div class="winner-card" id="recentWinner">
-Loading...
-</div>
+<div class="winner-card" id="recentWinner">Loading...</div>
 
-<h2 class="section-title">
-🗓️ Gameweek Winners
-</h2>
+<h2 class="section-title">Gameweek Winners</h2>
 
 <div class="table-scroll" id="gw-winners">
     <table class="winners-table">
         <thead>
             <tr>
-                <th>GW</th>
-                <th>🥇 First</th>
-                <th>🥈 Second</th>
-                <th>🥉 Third</th>
+                <th>Gameweek</th>
+                <th>1st Place</th>
+                <th>2nd Place</th>
+                <th>3rd Place</th>
             </tr>
         </thead>
         <tbody id="gameweekWinners">
@@ -104,13 +86,9 @@ Loading...
     </table>
 </div>
 
-<h2 class="section-title">
-📊 Season Snapshot
-</h2>
+<h2 class="section-title">Season Snapshot</h2>
 
-<div id="seasonSnapshot" class="stats">
-Loading...
-</div>
+<div id="seasonSnapshot" class="stats">Loading...</div>
 
 </main>
 

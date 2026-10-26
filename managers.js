@@ -64,6 +64,15 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
             event => event.is_current
         )?.id || 999;
 
+    const completedGWs =
+        events
+        .filter(
+            event => event.finished
+        )
+        .map(
+            event => event.id
+        );
+
     const finishedGameweeks =
     [
         ...new Set(
@@ -75,7 +84,7 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
         )
     ]
     .filter(
-        gw => gw < currentGWId
+        gw => completedGWs.includes(gw)
     )
     .sort(
         (a,b) => b-a

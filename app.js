@@ -1,41 +1,35 @@
+const API_URL = "https://fpl-api.adhikarysamarth.workers.dev/";
+const PRIZES = ["$70", "$50", "$30"];
+const SEASON_LABEL = "26/27";
+
+const $ = id => document.getElementById(id);
+
+// Escape text before it is placed into innerHTML
+const esc = value =>
+    String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[ch]));
+
 function renderGameweekWinners(histories, events, teams) {
 
-    const currentGWId =
-        events.find(
-            event => event.is_current
-        )?.id;
+    const finishedGameweeks =
+        events.filter(event => event.finished).map(event => event.id);
 
-    const gameweeks =
-    [
+    const gameweeks = [
         ...new Set(
-            histories.flatMap(
-                manager =>
-                    (manager.history.current || [])
-                    .map(row => row.event)
+            histories.flatMap(manager =>
+                (manager.history.current || []).map(row => row.event)
             )
         )
     ]
-    .filter(
-        gw => gw < currentGWId
-    )
-    .sort(
-        (a,b) => b-a
-    );
+        .filter(gw => finishedGameweeks.includes(gw))
+        .sort((a, b) => b - a);
 
-    console.log(
-        "Gameweeks Used:",
-        gameweeks
-    );
-
-    const teamByEntry =
-        new Map(
-            teams.map(
-                team => [
-                    team.entry,
-                    team
-                ]
-            )
-        );
+    const teamByEntry = new Map(teams.map(team => [team.entry, team]));
 
     const winners = [];
 
@@ -45,173 +39,87 @@ function renderGameweekWinners(histories, events, teams) {
             .map(manager => {
 
                 const result =
-                    manager.history.current.find(
-                        item =>
-                        item.event === gameweek
+                    (manager.history.current || []).find(
+                        item => item.event === gameweek
                     );
 
-                if(!result){
+                if (!result) {
                     return null;
                 }
 
-                const leagueTeam =
-                    teamByEntry.get(
-                        manager.entry
-                    );
+                const leagueTeam = teamByEntry.get(manager.entry);
+                const transferCost = result.event_transfers_cost || 0;
 
                 return {
-
-            team:
-                leagueTeam?.entry_name ??
-                manager.team,
-
-            manager:
-                leagueTeam?.player_name ??
-                manager.manager,
-
-            grossPoints:
-                result.points,
-
-            transferCost:
-                result.event_transfers_cost || 0,
-
-            benchPoints:
-                result.points_on_bench || 0,
-
-            points:
-                result.points -
-                (
-                    result.event_transfers_cost || 0
-                )
-
-        };
+                    team: leagueTeam?.entry_name ?? manager.team,
+                    manager: leagueTeam?.player_name ?? manager.manager,
+                    grossPoints: result.points,
+                    transferCost,
+                    benchPoints: result.points_on_bench || 0,
+                    points: result.points - transferCost
+                };
 
             })
             .filter(Boolean);
 
-        if(scores.length === 0){
+        if (scores.length === 0) {
             return;
         }
 
-        // League Ranking Rules
-        // 1. Net Points
-        // 2. Bench Points (Tie-breaker)
-        scores.sort(
-            (a,b) => {
-
-                if(
-                    b.points !== a.points
-                ){
-
-                    return (
-                        b.points - a.points
-                    );
-
-                }
-
-                return (
-                    b.benchPoints -
-                    a.benchPoints
-                );
-
-            }
+        // League ranking rules: 1) net points, 2) bench points (tie-breaker)
+        scores.sort((a, b) =>
+            b.points !== a.points
+                ? b.points - a.points
+                : b.benchPoints - a.benchPoints
         );
 
-        winners.push({
-
-            gameweek,
-
-            managers:
-                scores.slice(0,3)
-
-        });
+        winners.push({ gameweek, managers: scores.slice(0, 3) });
 
     });
 
-    const tbody =
-        document.getElementById(
-            "gameweekWinners"
-        );
+    const tbody = $("gameweekWinners");
 
-    if(tbody){
+    if (tbody) {
 
         tbody.replaceChildren();
 
-        winners.forEach(
-            ({ gameweek, managers }) => {
+        winners.forEach(({ gameweek, managers }) => {
 
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
+            const row = document.createElement("tr");
 
-                const first =
-                    managers[0]
-                    ? `${managers[0].team} (${managers[0].points})`
-                    : "";
+            const gwCell = document.createElement("td");
+            gwCell.textContent = `GW ${gameweek}`;
+            row.appendChild(gwCell);
 
-                const second =
-                    managers[1]
-                    ? `${managers[1].team} (${managers[1].points})`
-                    : "";
+            [0, 1, 2].forEach(index => {
 
-                const third =
-                    managers[2]
-                    ? `${managers[2].team} (${managers[2].points})`
-                    : "";
+                const cell = document.createElement("td");
+                const entry = managers[index];
 
-                [
+                if (entry) {
+                    cell.append(document.createTextNode(entry.team));
 
-                    `GW ${gameweek}`,
+                    const pts = document.createElement("span");
+                    pts.className = "pts";
+                    pts.textContent = `${entry.points} pts`;
+                    cell.appendChild(pts);
+                }
 
-                    first,
+                row.appendChild(cell);
 
-                    second,
+            });
 
-                    third
+            tbody.appendChild(row);
 
-                ].forEach(value => {
+        });
 
-                    const cell =
-                        document.createElement(
-                            "td"
-                        );
+        if (winners.length === 0) {
 
-                    cell.textContent =
-                        value;
-
-                    row.appendChild(
-                        cell
-                    );
-
-                });
-
-                tbody.appendChild(
-                    row
-                );
-
-            }
-        );
-
-        if(winners.length === 0){
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-            const cell =
-                document.createElement(
-                    "td"
-                );
-
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
             cell.colSpan = 4;
-
-            cell.textContent =
-                "No gameweek data available.";
-
+            cell.textContent = "No gameweek data available.";
             row.appendChild(cell);
-
             tbody.appendChild(row);
 
         }
@@ -222,7 +130,26 @@ function renderGameweekWinners(histories, events, teams) {
 
 }
 
-fetch("https://fpl-api.adhikarysamarth.workers.dev/")
+function placeCard(cls, rank, label, entry, prize) {
+
+    if (!entry) {
+        return "";
+    }
+
+    return `
+        <div class="result-place ${cls}">
+            <span class="rank-badge">${rank}</span>
+            <div class="place-label">${label}</div>
+            <h2>${esc(entry.team)}</h2>
+            <p class="manager">${esc(entry.manager)}</p>
+            <div class="gw-score">${entry.points} <small>pts</small></div>
+            <strong class="prize">Won ${prize}</strong>
+        </div>
+    `;
+
+}
+
+fetch(API_URL)
 .then(response => response.json())
 .then(data => {
 
@@ -230,360 +157,251 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
     const bootstrap = data.bootstrap;
     const histories = data.histories;
 
-    const teams =
-        leagueData.standings.results;
+    const teams = leagueData.standings.results;
 
-    document.getElementById(
-        "leagueName"
-    ).innerText =
-    leagueData.league.name;
+    $("leagueName").innerText = leagueData.league.name;
 
-    /*document.getElementById(
-        "members"
-    ).innerText =
-    teams.length;*/
+    $("lastUpdatedTop").innerText =
+        new Date(leagueData.last_updated_data).toLocaleString();
 
-    document.getElementById(
-        "lastUpdatedTop"
-    ).innerText =
-    new Date(
-        leagueData.last_updated_data
-    ).toLocaleString();
+    const currentGW = bootstrap.events.find(event => event.is_current);
 
-    const currentGW =
-        bootstrap.events.find(
-            event => event.is_current
-        );
+    if (currentGW) {
 
-    if(currentGW){
+        const currentGWScores = teams
+            .map(team => ({
+                team: team.entry_name,
+                manager: team.player_name,
+                points: Number(team.event_total || 0)
+            }))
+            .sort((a, b) => b.points - a.points);
 
-        const currentGWScores =
-        teams.map(team => ({
-
-            team:
-                team.entry_name,
-
-            manager:
-                team.player_name,
-
-            points:
-                Number(
-                    team.event_total || 0
-                )
-
-        }));
-
-    currentGWScores.sort(
-        (a,b) =>
-        b.points - a.points
-    );
-
-    const leader =
-        currentGWScores.length
-        ? currentGWScores[0]
-        : {
+        const leader = currentGWScores[0] ?? {
             team: "N/A",
             manager: "",
             points: 0
         };
 
-    const average =
-    (
-        currentGWScores.reduce(
-            (sum,row) =>
-            sum + row.points,
-            0
-        )
-        /
-        Math.max(
-            currentGWScores.length,
-            1
-        )
-    ).toFixed(1);
+        const average = (
+            currentGWScores.reduce((sum, row) => sum + row.points, 0) /
+            Math.max(currentGWScores.length, 1)
+        ).toFixed(1);
 
-        document.getElementById(
-            "leadingGWTitle"
-        ).innerText =
-        `🔥 Leading GW ${currentGW.id} 🔥`;
+        $("leadingGWTitle").innerText =
+            currentGW.finished
+                ? `GW ${currentGW.id} Winner`
+                : `Leading GW ${currentGW.id}`;
 
-        document.getElementById(
-            "leadingGW"
-        ).innerHTML =
-        `
-        <span style="color:#dc2626;font-weight:800;">
-            "${leader.team}"
-        </span>
-
-        <br>
-
-        <span style="color:#111827;">
-            ${leader.manager}
-        </span>
-
-        <br>
-
-        <span style="color:#111827;font-weight:700;">
-            ${leader.points} pts
-        </span>
+        $("leadingGW").innerHTML = `
+            <span class="lead-team">${esc(leader.team)}</span>
+            <span class="lead-manager">${esc(leader.manager)}</span>
+            <span class="lead-pts">${leader.points} pts</span>
         `;
 
-        document.getElementById(
-            "gwAverage"
-        ).innerHTML =
-        `
-        League Avg: ${average} pts
-        `;
+        $("gwAverage").innerHTML = `League average: ${average} pts`;
+
+        $("gw").innerHTML =
+            currentGW.finished
+                ? `<span>GW ${currentGW.id}</span><span class="status-badge">Completed</span>`
+                : `<span>GW ${currentGW.id}</span>`;
+
     }
 
-    if(currentGW){
+    const nextGW = bootstrap.events.find(event => event.is_next);
 
-        document.getElementById(
-            "gw"
-        ).innerText =
-        "GW " + currentGW.id;
-    }
+    if (nextGW) {
 
-    const nextGW =
-        bootstrap.events.find(
-            event => event.is_next
-        );
+        const deadlineDate = new Date(nextGW.deadline_time);
 
-    if(nextGW){
+        $("deadlineTitle").innerText = `GW ${nextGW.id} Deadline`;
 
-        const deadlineDate =
-            new Date(
-                nextGW.deadline_time
-            );
-            
-        const deadlineTitle =
-            document.getElementById(
-        "deadlineTitle"
-    );
+        $("deadline").innerText =
+            `${deadlineDate.toLocaleDateString("en-US", {
+                timeZone: "America/New_York",
+                month: "short",
+                day: "numeric",
+                year: "numeric"
+            })} ${deadlineDate.toLocaleTimeString("en-US", {
+                timeZone: "America/New_York",
+                hour: "numeric",
+                minute: "2-digit"
+            })} Eastern Time`;
 
-    if(deadlineTitle){
+        const updateCountdown = () => {
 
-    deadlineTitle.innerText =
-    `⏰ GW ${nextGW.id} Deadline`;
+            const distance = deadlineDate - new Date();
 
-}
-
-        document.getElementById(
-            "deadline"
-        ).innerText =
-        `${deadlineDate.toLocaleDateString("en-US", {
-            timeZone: "America/New_York",
-            month: "short",
-            day: "numeric",
-            year: "numeric"
-        })} ${deadlineDate.toLocaleTimeString("en-US", {
-            timeZone: "America/New_York",
-            hour: "numeric",
-            minute: "2-digit"
-        })} Eastern Time`;
-
-        function updateCountdown(){
-
-            const now = new Date();
-
-            const distance =
-                deadlineDate - now;
-
-            if(distance <= 0){
-
-                document.getElementById(
-                    "countdown"
-                ).innerHTML =
-                "⏰ Deadline Passed";
-
+            if (distance <= 0) {
+                $("countdown").innerHTML = "Deadline passed";
                 return;
             }
 
-            const days =
-                Math.floor(distance/(1000*60*60*24));
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            const hours =
-                Math.floor((distance%(1000*60*60*24))
-                /(1000*60*60));
+            $("countdown").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-            const minutes =
-                Math.floor((distance%(1000*60*60))
-                /(1000*60));
-
-            const seconds =
-                Math.floor((distance%(1000*60))
-                /1000);
-
-            document.getElementById(
-                "countdown"
-            ).innerHTML =
-            `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
+        };
 
         updateCountdown();
+        setInterval(updateCountdown, 1000);
 
-        setInterval(updateCountdown,1000);
     }
 
     const gameweekWinners =
-    renderGameweekWinners(
-        histories,
-        bootstrap.events,
-        teams
-    );
+        renderGameweekWinners(histories, bootstrap.events, teams);
 
-const latestWinner =
-    gameweekWinners[0];
+    const latestWinner = gameweekWinners[0];
 
-if(latestWinner){
+    if (latestWinner) {
 
-    const winner =
-        latestWinner.managers[0];
+        const [first, second, third] = latestWinner.managers;
 
-    const teamName =
-        winner.team;
+        $("gwResultsTitle").innerText =
+            `GW ${latestWinner.gameweek} Results`;
 
-    const managerName =
-        winner.manager;
+        $("recentWinner").innerHTML = `
+            <div class="results-grid">
+                ${placeCard("gold", 1, "First place", first, PRIZES[0])}
+                ${placeCard("silver", 2, "Second place", second, PRIZES[1])}
+                ${placeCard("bronze", 3, "Third place", third, PRIZES[2])}
+            </div>
+            <div class="share-row">
+                <button type="button" class="copy-btn" id="copyResults">Copy for Viber</button>
+            </div>
+        `;
 
-    const winningPoints =
-        winner.points;
+        // Copies a plain-text summary that pastes cleanly into Viber
+        const copyBtn = $("copyResults");
 
-    document.getElementById(
-        "recentWinner"
-    ).innerHTML =
-    `
-    <div class="winner-name">
-        🔥 ${teamName} 🔥
-    </div>
+        copyBtn.addEventListener("click", async () => {
 
-    <h3>
-        ${managerName} | GW ${latestWinner.gameweek} | ${winningPoints} Net Points
-    </h3>
-    `;
-}
+            const medals = ["🥇", "🥈", "🥉"];
 
-const winCounts = {};
+            const lines = [
+                "🚨 🚨 🚨",
+                `GameWeek ${latestWinner.gameweek} Winners (${SEASON_LABEL}):`
+            ];
 
-gameweekWinners.forEach(gw => {
+            latestWinner.managers.forEach((m, i) => {
+                lines.push("");
+                lines.push(
+                    `${medals[i]}${m.team} (${m.manager}): ${m.points} points. Gets ${PRIZES[i]}.`
+                );
+            });
 
-    const winner = gw.managers[0];
+            const text = lines.join("\n");
 
-    if(!winner){
-        return;
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch {
+                const ta = document.createElement("textarea");
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand("copy");
+                ta.remove();
+            }
+
+            copyBtn.textContent = "Copied!";
+            setTimeout(() => { copyBtn.textContent = "Copy for Viber"; }, 2000);
+
+        });
+
     }
 
-    winCounts[winner.team] =
-        (winCounts[winner.team] || 0) + 1;
+    // ---------- Season snapshot ----------
+    const winCounts = {};
 
-});
-
-const uniqueWinners =
-    Object.keys(winCounts).length;
-
-const mostWins =
-    Object.entries(winCounts)
-    .sort((a,b) => b[1] - a[1])[0];
-
-let highestScore = 0;
-
-let highestScoreTeam = "";
-
-let highestScoreManager = "";
-
-let highestScoreGW = "";
-
-gameweekWinners.forEach(gw => {
-
-    gw.managers.forEach(manager => {
-
-        if(manager.points > highestScore){
-
-            highestScore =
-                manager.points;
-
-            highestScoreTeam =
-                manager.team;
-
-            highestScoreManager =
-                manager.manager;
-
-            highestScoreGW =
-                gw.gameweek;
-
+    gameweekWinners.forEach(gw => {
+        const winner = gw.managers[0];
+        if (winner) {
+            winCounts[winner.team] = (winCounts[winner.team] || 0) + 1;
         }
-
     });
 
-});
+    const uniqueWinners = Object.keys(winCounts).length;
 
-const averageWinnerScore =
-(
-    gameweekWinners.reduce(
-        (sum,gw) =>
-        sum + gw.managers[0].points,
-        0
-    )
-    /
-    gameweekWinners.length
-).toFixed(1);
+    const [mostWinsTeam, mostWinsCount] =
+        Object.entries(winCounts).sort((a, b) => b[1] - a[1])[0] ?? ["N/A", 0];
 
-document.getElementById(
-    "seasonSnapshot"
-).innerHTML =
+    let highestScore = 0;
+    let highestScoreTeam = "";
+    let highestScoreManager = "";
+    let highestScoreGW = "";
 
-`
-<div class="podium-card">
-<h3>Completed GWs</h3>
-<h2 class = "statpts">${gameweekWinners.length}</h2>
-</div>
+    gameweekWinners.forEach(gw => {
+        gw.managers.forEach(manager => {
+            if (manager.points > highestScore) {
+                highestScore = manager.points;
+                highestScoreTeam = manager.team;
+                highestScoreManager = manager.manager;
+                highestScoreGW = gw.gameweek;
+            }
+        });
+    });
 
-<div class="podium-card">
-<h3>Unique Winners</h3>
-<h2 class = "statpts">${uniqueWinners}</h2>
-</div>
+    const averageWinnerScore = gameweekWinners.length
+        ? (
+            gameweekWinners.reduce(
+                (sum, gw) => sum + gw.managers[0].points,
+                0
+            ) / gameweekWinners.length
+        ).toFixed(1)
+        : "0.0";
 
-<div class="podium-card">
-    <h3>Highest Net Score</h3>
-    <h2 class = "statpts">${highestScore}</h2>
-    <small>${highestScoreTeam}</small> |
-    <small>${highestScoreManager}</small> |
-    <small>
-    GW ${highestScoreGW}
-    </small>
-</div>
+    $("seasonSnapshot").innerHTML = `
+        <div class="podium-card">
+            <h3>Completed GWs</h3>
+            <h2 class="statpts">${gameweekWinners.length}</h2>
+        </div>
 
-<div class="podium-card">
-<h3>Most GW Wins</h3>
-<h2 class = "statpts">${mostWins[0]} | ${mostWins[1]} wins</h2>
-</div>
+        <div class="podium-card">
+            <h3>Unique Winners</h3>
+            <h2 class="statpts">${uniqueWinners}</h2>
+        </div>
 
-<div class="podium-card">
-<h3>Avg Winner Score</h3>
-<h2 class = "statpts">${averageWinnerScore}</h2>
-</div>
-`;
+        <div class="podium-card">
+            <h3>Highest Net Score</h3>
+            <h2 class="statpts">${highestScore}</h2>
+            <small>${esc(highestScoreTeam)} &middot; ${esc(highestScoreManager)} &middot; GW ${highestScoreGW}</small>
+        </div>
+
+        <div class="podium-card">
+            <h3>Most GW Wins</h3>
+            <h2 class="statpts">${mostWinsCount}</h2>
+            <small>${esc(mostWinsTeam)}</small>
+        </div>
+
+        <div class="podium-card">
+            <h3>Avg Winner Score</h3>
+            <h2 class="statpts">${averageWinnerScore}</h2>
+        </div>
+    `;
 
 })
 .catch(error => {
 
-    console.error("REAL ERROR:", error);
+    console.error("Failed to load dashboard data:", error);
 
-    alert(error);
-
-    document.getElementById("leadingGW").textContent =
-        "Unable to load gameweek winner";
-    document.getElementById("recentWinner").textContent =
+    $("leadingGW").textContent = "Unable to load gameweek winner";
+    $("recentWinner").textContent =
         "Unable to load gameweek results. Check the API connection and try again.";
 
-    const tbody = document.getElementById("gameweekWinners");
-    tbody.replaceChildren();
+    const tbody = $("gameweekWinners");
 
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 4;
-    cell.textContent =
-        "Unable to load gameweek winners. Check the API connection and try again.";
-    row.appendChild(cell);
-    tbody.appendChild(row);
+    if (tbody) {
+        tbody.replaceChildren();
+
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 4;
+        cell.textContent =
+            "Unable to load gameweek winners. Check the API connection and try again.";
+        row.appendChild(cell);
+        tbody.appendChild(row);
+    }
 
 });
