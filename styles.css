@@ -715,6 +715,82 @@ h1,h2,h3{letter-spacing:-.01em}
 }
 .live-table th:last-child{text-align:right;padding-right:28px}
 
+/* toolbar: search + last-updated stamp */
+.live-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px 20px;
+  margin:0 0 14px;
+}
+
+.live-search{
+  font:inherit;
+  font-size:14px;
+  width:280px;
+  max-width:100%;
+  padding:10px 16px 10px 40px;
+  color:var(--ink);
+  background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 15px center;
+  border:1px solid var(--line);
+  border-radius:999px;
+  outline:none;
+  box-shadow:var(--shadow-sm);
+  transition:border-color .2s,box-shadow .2s;
+}
+
+.live-search::placeholder{color:var(--muted)}
+
+.live-search:focus{
+  border-color:var(--accent-2);
+  box-shadow:0 0 0 3px var(--navy-soft);
+}
+
+.live-updated{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--muted);
+}
+
+.live-updated::before{
+  content:"";
+  width:7px;height:7px;
+  border-radius:50%;
+  background:#16a34a;
+}
+
+.live-updated.is-error{color:#b91c1c}
+.live-updated.is-error::before{background:#dc2626}
+
+/* manager name under the team name (mobile only) */
+.team-manager{display:none}
+
+@media(max-width:768px){
+  .live-search{width:100%}
+
+  /* keep Behind + GW Pts on screen: drop the Manager column, show it under the team */
+  .live-table th:nth-child(3),
+  .live-table td.manager-cell{display:none}
+
+  .team-manager{
+    display:block;
+    margin-top:2px;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--muted);
+  }
+
+  .live-table td.rank-cell{width:56px;padding-left:8px}
+  .live-table th:first-child{padding-left:8px}
+  .live-table td.pts-cell,
+  .live-table th:last-child{padding-right:14px}
+  .live-table td.pts-cell{font-size:17px}
+}
+
 .rank-pill{
   display:inline-flex;
   align-items:center;
@@ -776,4 +852,84 @@ h1,h2,h3{letter-spacing:-.01em}
 @media(prefers-reduced-motion:reduce){
   *{transition:none!important}
   html{scroll-behavior:auto}
+}
+/* ================= COMPACT TABLES ON PHONES ================= */
+@media(max-width:600px){
+
+  /* Gameweek winners table (dashboard) */
+  .winners-table{table-layout:fixed}
+
+  .winners-table th,
+  .winners-table td{
+    padding:10px 5px;
+    font-size:12px;
+    line-height:1.3;
+    white-space:normal;
+    overflow-wrap:break-word;
+    hyphens:auto;
+  }
+
+  .winners-table th{
+    font-size:9px;
+    letter-spacing:.03em;
+  }
+
+  .winners-table th:first-child,
+  .winners-table td:first-child{
+    width:66px;
+    padding-left:8px;
+    padding-right:4px;
+    white-space:nowrap;
+  }
+
+  .winners-table .pts{
+    display:block;
+    margin:2px 0 0;
+    font-size:12px;
+  }
+
+  /* Manager stats table */
+  .analytics-table:not(.live-table) th,
+  .analytics-table:not(.live-table) thead th{
+    padding:10px 3px;
+    font-size:9px;
+    letter-spacing:.03em;
+    line-height:1.2;
+    white-space:normal;
+  }
+
+  .analytics-table:not(.live-table) td{
+    padding:9px 3px;
+    font-size:11.5px;
+    line-height:1.25;
+    overflow-wrap:break-word;
+    hyphens:auto;
+  }
+
+  .analytics-table:not(.live-table) td:first-child,
+  .analytics-table:not(.live-table) th:first-child{
+    padding-left:8px;
+    padding-right:4px;
+  }
+
+  .analytics-table:not(.live-table) td:nth-child(2),
+  .analytics-table:not(.live-table) th:nth-child(2){
+    padding-left:4px;
+  }
+
+  /* number columns (BB, TC, 1st ... Avg) get very tight side padding */
+  .analytics-table:not(.live-table) th:nth-child(n+3),
+  .analytics-table:not(.live-table) td:nth-child(n+3){
+    padding-left:1px;
+    padding-right:1px;
+  }
+
+  /* keep values like 100.5 on one line */
+  .analytics-table:not(.live-table) td:nth-child(9){
+    white-space:nowrap;
+  }
+
+  /* Live GW table */
+  .live-table td.team-cell{overflow-wrap:break-word;hyphens:auto}
+  .live-table td.pts-cell{padding-left:6px}
 }

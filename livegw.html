@@ -2,17 +2,17 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<title>Live GW Table | Sagarmatha League</title>
+<meta name="description" content="Live gameweek standings for the Sagarmatha League.">
+<meta name="theme-color" content="#0b2a6f">
 
-<title>Live GW Table</title>
-
-<link rel="stylesheet"
-href="styles.css">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -20,9 +20,7 @@ href="styles.css">
 <header class="hero">
     <img src="images/Flag_of_Nepal.gif" alt="Flag of Nepal" class="flag">
     <h1 id="leagueName">Sagarmatha League</h1>
-
     <p>Live Gameweek Standings</p>
-
 </header>
 
 <nav class="navbar">
@@ -34,39 +32,47 @@ href="styles.css">
 
 <div class="container">
 
-    <h2
-        id="liveGWTitle"
-        class="section-title">
+    <div class="cards" id="liveSummary">
+        <div class="card">Loading...</div>
+    </div>
 
-        Live GW Standings
+    <h2 id="liveGWTitle" class="section-title">Live GW Standings</h2>
 
-    </h2>
+    <div class="live-toolbar">
+        <input
+            type="search"
+            id="liveSearch"
+            class="live-search"
+            placeholder="Search team or manager"
+            aria-label="Search team or manager"
+            autocomplete="off">
+        <span id="liveUpdated" class="live-updated">Loading...</span>
+    </div>
+
+    <div class="chip-legend">
+        <span><span class="chip-badge chip-bb">BB</span>Bench Boost</span>
+        <span><span class="chip-badge chip-tc">TC</span>Triple Captain</span>
+        <span><span class="chip-badge chip-wc">WC</span>Wildcard</span>
+        <span><span class="chip-badge chip-fh">FH</span>Free Hit</span>
+    </div>
 
     <div class="table-container">
 
-        <table class="analytics-table">
+        <table class="analytics-table live-table">
 
             <thead>
-
                 <tr>
-                    <th>GW Rank</th>
+                    <th>Rank</th>
                     <th>Team</th>
                     <th>Manager</th>
                     <th>GW Pts</th>
                 </tr>
-
             </thead>
 
             <tbody id="liveGWTable">
-
                 <tr>
-
-                    <td colspan="4">
-                        Loading...
-                    </td>
-
+                    <td colspan="4">Loading...</td>
                 </tr>
-
             </tbody>
 
         </table>
