@@ -249,6 +249,13 @@ rankings.forEach((entry,index) => {
                 b.player
             )
         );
+    
+    const totalMoneyWon =
+        rows.reduce(
+            (sum,row) =>
+                sum + row.moneyWon,
+            0
+        );
 
     const tbody =
         document.getElementById(
@@ -311,6 +318,8 @@ const totalTC =
         row => row.tc
     ).length;
 
+/* console.log("Total Money Won:", totalMoneyWon); */
+
 tbody.innerHTML += `
 
 <tr class="summary-row">
@@ -344,6 +353,12 @@ tbody.innerHTML += `
     <td></td>
 
     <td></td>
+
+    <td class="money-cell">
+        <strong>
+        $${totalMoneyWon}
+        </strong>
+    </td>
 
 </tr>
 
