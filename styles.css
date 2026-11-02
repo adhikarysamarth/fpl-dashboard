@@ -645,31 +645,103 @@ h1,h2,h3{letter-spacing:-.01em}
 .rules-card ul,.rules-card ol{margin-left:25px}
 
 /* ================= LIVE GW TABLE ================= */
+/* status pills (title) */
+.live-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.live-badge::before{
+  content:"";
+  width:7px;height:7px;
+  border-radius:50%;
+  background:#dc2626;
+  animation:livePulse 1.6s ease-out infinite;
+}
+@keyframes livePulse{
+  0%{box-shadow:0 0 0 0 rgba(220,38,38,.55)}
+  70%{box-shadow:0 0 0 8px rgba(220,38,38,0)}
+  100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}
+}
+
+.card-note{
+  margin-top:10px;
+  font-size:13px;
+  font-weight:600;
+  color:var(--muted);
+}
+
+/* chips */
 .chip-badge{
-    display:inline-block;
-    margin-left:8px;
-    padding:2px 8px;
-    border-radius:999px;
-    color:white;
-    font-size:.75rem;
-    font-weight:700;
+  display:inline-block;
+  margin-left:10px;
+  padding:3px 9px;
+  border-radius:6px;
+  font-size:10.5px;
+  font-weight:800;
+  letter-spacing:.08em;
+  line-height:1.4;
+  vertical-align:middle;
+  color:#fff;
+}
+.chip-fh{background:#475569}
+.chip-wc{background:#c8102e}
+.chip-tc{background:#15803d}
+.chip-bb{background:#0e7490}
+
+.chip-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 22px;
+  margin:0 0 18px;
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--muted);
+}
+.chip-legend .chip-badge{margin:0 8px 0 0}
+
+/* live standings table */
+.live-table td.rank-cell{text-align:center;width:88px;padding-left:12px}
+.live-table th:first-child{text-align:center;padding-left:12px}
+.live-table td.team-cell{text-align:left;font-weight:700;color:var(--ink)}
+.live-table td.manager-cell{text-align:left;font-weight:500;color:var(--muted)}
+.live-table th:nth-child(3){text-align:left}
+.live-table td.pts-cell{
+  text-align:right;
+  padding-right:28px;
+  font-size:18px;
+  font-weight:800;
+  color:var(--accent-2);
+}
+.live-table th:last-child{text-align:right;padding-right:28px}
+
+.rank-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:32px;
+  height:32px;
+  padding:0 8px;
+  font-size:14px;
+  font-weight:800;
+  color:var(--muted);
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:999px;
 }
 
-.chip-fh{
-    background:#6b7280;
-}
+/* top 3 rows */
+.analytics-table tbody tr.rank-1{background:linear-gradient(90deg,rgba(201,162,39,.17),rgba(201,162,39,.03) 65%)}
+.analytics-table tbody tr.rank-2{background:linear-gradient(90deg,rgba(138,150,168,.18),rgba(138,150,168,.03) 65%)}
+.analytics-table tbody tr.rank-3{background:linear-gradient(90deg,rgba(184,115,58,.17),rgba(184,115,58,.03) 65%)}
 
-.chip-wc{
-    background:#dc2626;
-}
+.analytics-table tbody tr.rank-1 td:first-child{box-shadow:inset 4px 0 0 var(--gold)}
+.analytics-table tbody tr.rank-2 td:first-child{box-shadow:inset 4px 0 0 var(--silver)}
+.analytics-table tbody tr.rank-3 td:first-child{box-shadow:inset 4px 0 0 var(--bronze)}
 
-.chip-tc{
-    background:#16a34a;
-}
-
-.chip-bb{
-    background:#06b6d4;
-}
+.rank-1 .rank-pill{background:var(--gold);color:#fff;border-color:transparent;box-shadow:0 3px 8px rgba(201,162,39,.45)}
+.rank-2 .rank-pill{background:var(--silver);color:#fff;border-color:transparent;box-shadow:0 3px 8px rgba(138,150,168,.45)}
+.rank-3 .rank-pill{background:var(--bronze);color:#fff;border-color:transparent;box-shadow:0 3px 8px rgba(184,115,58,.45)}
 
 /* ================= FOOTER ================= */
 .site-footer{

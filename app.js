@@ -202,8 +202,8 @@ fetch(API_URL)
 
         $("gw").innerHTML =
             currentGW.finished
-                ? `<span>GW ${currentGW.id}</span><span class="status-badge">• Completed</span>`
-                : `<span>GW ${currentGW.id}</span><span class="live-badge">• LIVE</span>`;
+                ? `<span>GW ${currentGW.id}</span><span class="status-badge">Completed</span>`
+                : `<span>GW ${currentGW.id}</span><span class="live-badge">LIVE</span>`;
 
     }
 
