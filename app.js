@@ -190,7 +190,7 @@ fetch(API_URL)
         $("leadingGWTitle").innerText =
             currentGW.finished
                 ? `GW ${currentGW.id} Winner`
-                : `Leading GW ${currentGW.id}`;
+                : `🔥 Leading GW ${currentGW.id} 🔥`;
 
         $("leadingGW").innerHTML = `
             <span class="lead-team">${esc(leader.team)}</span>
@@ -202,8 +202,8 @@ fetch(API_URL)
 
         $("gw").innerHTML =
             currentGW.finished
-                ? `<span>GW ${currentGW.id}</span><span class="status-badge">Completed</span>`
-                : `<span>GW ${currentGW.id}</span>`;
+                ? `<span>GW ${currentGW.id}</span><span class="status-badge">• Completed</span>`
+                : `<span>GW ${currentGW.id}</span><span class="live-badge">• LIVE</span>`;
 
     }
 
