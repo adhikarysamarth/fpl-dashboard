@@ -293,7 +293,7 @@ fetch(API_URL)
 
         $("recentWinner").innerHTML = `
             <div class="results-grid">
-                ${placeCard("gold", 1, "First place", first, PRIZES[0])}
+                ${placeCard("gold", 1, "🔥 Winner 🔥", first, PRIZES[0])}
                 ${placeCard("silver", 2, "Second place", second, PRIZES[1])}
                 ${placeCard("bronze", 3, "Third place", third, PRIZES[2])}
             </div>
@@ -356,10 +356,22 @@ fetch(API_URL)
     const [mostWinsTeam, mostWinsCount] =
         Object.entries(winCounts).sort((a, b) => b[1] - a[1])[0] ?? ["N/A", 0];
 
+    const mostWinsManager =
+        gameweekWinners
+            .flatMap(gw => gw.managers)
+            .find(
+                manager =>
+                    manager.team === mostWinsTeam
+            )?.manager || "";
+
     let highestScore = 0;
     let highestScoreTeam = "";
     let highestScoreManager = "";
     let highestScoreGW = "";
+    let lowestWinningScore = Infinity;
+    let lowestWinningGW = "";
+    let lowestWinningTeam = "";
+    let lowestWinningManager = "";
 
     gameweekWinners.forEach(gw => {
         gw.managers.forEach(manager => {
@@ -370,6 +382,21 @@ fetch(API_URL)
                 highestScoreGW = gw.gameweek;
             }
         });
+        const weeklyWinner =
+            gw.managers[0];
+        if (
+            weeklyWinner &&
+            weeklyWinner.points < lowestWinningScore
+        ) {
+            lowestWinningScore =
+                weeklyWinner.points;
+            lowestWinningTeam =
+                weeklyWinner.team;
+            lowestWinningManager =
+                weeklyWinner.manager;
+            lowestWinningGW =
+                gw.gameweek;
+        }
     });
 
     const averageWinnerScore = gameweekWinners.length
@@ -380,6 +407,80 @@ fetch(API_URL)
             ) / gameweekWinners.length
         ).toFixed(1)
         : "0.0";
+
+    const teamStats = {};
+    gameweekWinners.forEach(gw => {
+        gw.managers.forEach((manager, index) => {
+            teamStats[manager.team] ??= {
+                team: manager.team,
+                top3: 0,
+                moneyWon: 0
+            };
+            teamStats[manager.team].top3++;
+            if(index === 0){
+                teamStats[manager.team].moneyWon += 70;
+            }
+            if(index === 1){
+                teamStats[manager.team].moneyWon += 50;
+            }
+            if(index === 2){
+                teamStats[manager.team].moneyWon += 30;
+            }
+        });
+    });
+
+    const mostTop3 =
+        Object.values(teamStats)
+        .sort((a,b) => b.top3 - a.top3)[0];
+
+    const mostTop3Manager =
+        gameweekWinners
+            .flatMap(gw => gw.managers)
+            .find(
+                m => m.team === mostTop3?.team
+            )?.manager || "";
+
+    const mostMoney =
+        Object.values(teamStats)
+        .sort((a,b) => b.moneyWon - a.moneyWon)[0];
+
+    const mostMoneyManager =
+        gameweekWinners
+            .flatMap(gw => gw.managers)
+            .find(
+                m => m.team === mostMoney?.team
+            )?.manager || "";
+
+    const benchTotals = {};
+
+    histories.forEach(manager => {
+
+        const teamName =
+            manager.team;
+
+        const managerName =
+            manager.manager;
+
+        benchTotals[teamName] ??= {
+            team: teamName,
+            manager: managerName,
+            points: 0
+        };
+
+        (manager.history.current || [])
+            .forEach(week => {
+
+                benchTotals[teamName].points +=
+                    week.points_on_bench || 0;
+            });
+    });
+
+    const benchFarmer =
+        Object.values(benchTotals)
+        .sort(
+            (a,b) =>
+            b.points - a.points
+        )[0];
 
     $("seasonSnapshot").innerHTML = `
         <div class="podium-card">
@@ -393,20 +494,63 @@ fetch(API_URL)
         </div>
 
         <div class="podium-card">
-            <h3>Highest Net Score</h3>
+            <h3>Highest Winning Score</h3>
             <h2 class="statpts">${highestScore}</h2>
             <small>${esc(highestScoreTeam)} &middot; ${esc(highestScoreManager)} &middot; GW ${highestScoreGW}</small>
         </div>
 
         <div class="podium-card">
+            <h3>Lowest Winning Score</h3>
+            <h2 class="statpts">${lowestWinningScore}</h2>
+            <small>${esc(lowestWinningTeam)} · ${esc(lowestWinningManager)} · GW ${lowestWinningGW}</small>
+        </div>
+
+        <div class="podium-card">
             <h3>Most GW Wins</h3>
             <h2 class="statpts">${mostWinsCount}</h2>
-            <small>${esc(mostWinsTeam)}</small>
+            <small>
+                ${esc(mostWinsTeam)}
+                ·
+                ${esc(mostWinsManager)}
+            </small>
         </div>
+
+        <div class="podium-card">
+            <h3>Most Top 3 Finishes</h3>
+            <h2 class="statpts">
+                ${mostTop3?.top3 || 0}
+            </h2>
+            <small>
+                ${esc(mostTop3?.team || "N/A")}
+                ·
+                ${esc(mostTop3Manager)}
+            </small>
+        </div>    
 
         <div class="podium-card">
             <h3>Avg Winner Score</h3>
             <h2 class="statpts">${averageWinnerScore}</h2>
+        </div>
+        
+        <div class="podium-card">
+            <h3>Highest Payout</h3>
+            <h2 class="statpts">
+                $${mostMoney?.moneyWon || 0}
+            </h2>
+            <small>
+                ${esc(mostMoney?.team || "N/A")}
+                ·
+                ${esc(mostMoneyManager)}
+            </small>
+        </div>
+        <div class="podium-card">
+            <h3>Bench Farmer</h3>
+            <h2 class="statpts">${benchFarmer?.points || 0} Pts</h2>
+            <small>
+                ${esc(benchFarmer?.team || "N/A")}
+                ·
+                ${esc(benchFarmer?.manager || "")}
+            </small>
         </div>
     `;
 

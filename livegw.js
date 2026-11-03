@@ -96,14 +96,26 @@ function renderSummary(rows) {
     const chipBreakdown = chipsTotal
         ? Object.entries(chipCounts).map(([label, n]) => `${label} ${n}`).join(" · ")
         : "No chips played";
+    
+    const highestBench =
+    rows.reduce((best, row) =>
+        (row.benchPoints || 0) >
+        (best?.benchPoints || 0)
+            ? row
+            : best,
+        null
+    );
 
     summary.innerHTML = `
         <div class="card">
-            <h3>Current Leader</h3>
+            <h3>Highest Bench</h3>
             <div class="big">
-                <span class="lead-team">${esc(leader?.team ?? "N/A")}</span>
-                <span class="lead-manager">${esc(leader?.manager ?? "")}</span>
-                <span class="lead-pts">${leader?.netPoints ?? 0} pts</span>
+                <span class="lead-team">
+                    ${highestBench?.benchPoints ?? 0} pts
+                </span>
+                <span class="lead-manager">
+                    ${esc(highestBench?.team ?? "")}
+                </span>
             </div>
         </div>
 
@@ -159,6 +171,7 @@ function renderTable() {
                 <td class="team-cell">${esc(row.team)}${chipBadge(row.chip)}<span class="team-manager">${esc(row.manager)}</span></td>
                 <td class="manager-cell">${esc(row.manager)}</td>
                 <td class="pts-cell">${row.netPoints}</td>
+                <td class="bench-cell">${row.benchPoints}</td>
             </tr>
         `;
 
@@ -195,8 +208,10 @@ async function load() {
             team: String(row.team ?? ""),
             manager: String(row.manager ?? ""),
             chip: row.chip || "",
-            netPoints: Number(row.netPoints) || 0
+            netPoints: Number(row.netPoints) || 0,
+            benchPoints: Number(row.benchPoints) || 0
         }));
+
 
         hasLoaded = true;
 
