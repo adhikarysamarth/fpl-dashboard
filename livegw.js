@@ -34,15 +34,37 @@ function chipBadge(chipName) {
         : "";
 }
 
-function renderTitle(currentGW) {
+function renderTitle(
+    currentGW,
+    finished,
+    dataChecked
+) {
 
-    const title = $("liveGWTitle");
+    const title =
+        $("liveGWTitle");
 
-    if (title) {
-        title.innerHTML =
-            `Live GW ${esc(currentGW)} Standings ` +
-            `<span class="live-badge">Live</span>`;
+    if (!title) {
+        return;
     }
+
+    const badge =
+
+        (
+            finished &&
+            dataChecked
+        )
+
+        ?
+
+        '<span class="status-badge">Final</span>'
+
+        :
+
+        '<span class="live-badge">Live</span>';
+
+    title.innerHTML =
+        `GW ${esc(currentGW)} Standings ` +
+        badge;
 
 }
 
@@ -156,7 +178,7 @@ function setStamp(text, failed = false) {
 }
 
 async function load() {
-
+    
     try {
 
         const response = await fetch(API_URL);
@@ -166,6 +188,7 @@ async function load() {
         }
 
         const data = await response.json();
+        console.log(data);
 
         allRows = (data.standings || []).map((row, index) => ({
             rank: row.rank ?? index + 1,
@@ -177,7 +200,11 @@ async function load() {
 
         hasLoaded = true;
 
-        renderTitle(data.currentGW);
+        renderTitle(
+            data.currentGW,
+            data.finished,
+            data.dataChecked
+        );
         renderSummary(allRows);
         renderTable();
 

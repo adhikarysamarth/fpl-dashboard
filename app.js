@@ -1,5 +1,23 @@
 const API_URL = "https://fpl-api.adhikarysamarth.workers.dev/";
 const PRIZES = ["$70", "$50", "$30"];
+const CHIPS = {
+    freehit:  { label: "FH", cls: "chip-fh" },
+    wildcard: { label: "WC", cls: "chip-wc" },
+    bboost:   { label: "BB", cls: "chip-bb" },
+    "3xc":    { label: "TC", cls: "chip-tc" }
+};
+
+function chipBadge(chipName) {
+
+    const info =
+        CHIPS[chipName];
+
+    return info
+        ? `<span class="chip-badge ${info.cls}">
+             ${info.label}
+           </span>`
+        : "";
+}
 const SEASON_LABEL = "26/27";
 
 const $ = id => document.getElementById(id);
@@ -50,13 +68,21 @@ function renderGameweekWinners(histories, events, teams) {
                 const leagueTeam = teamByEntry.get(manager.entry);
                 const transferCost = result.event_transfers_cost || 0;
 
+                const chipPlayed =
+                (manager.history.chips || [])
+                .find(
+                    chip =>
+                        chip.event === gameweek
+                )?.name || null;
+
                 return {
                     team: leagueTeam?.entry_name ?? manager.team,
                     manager: leagueTeam?.player_name ?? manager.manager,
                     grossPoints: result.points,
                     transferCost,
                     benchPoints: result.points_on_bench || 0,
-                    points: result.points - transferCost
+                    points: result.points - transferCost,
+                    chip: chipPlayed
                 };
 
             })
@@ -140,7 +166,10 @@ function placeCard(cls, rank, label, entry, prize) {
         <div class="result-place ${cls}">
             <span class="rank-badge">${rank}</span>
             <div class="place-label">${label}</div>
-            <h2>${esc(entry.team)}</h2>
+            <h2>
+                ${esc(entry.team)}
+                ${chipBadge(entry.chip)}
+            </h2>
             <p class="manager">${esc(entry.manager)}</p>
             <div class="gw-score">${entry.points} <small>pts</small></div>
             <strong class="prize">Won ${prize}</strong>
