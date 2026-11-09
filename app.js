@@ -199,81 +199,61 @@ fetch(API_URL)
 
     if (currentGW) {
 
-        const currentGWScores = teams
-            .map(team => ({
-                team: team.entry_name,
-                manager: team.player_name,
-                points: Number(team.event_total || 0)
-            }))
-            .sort((a, b) => b.points - a.points);
-
-        const leader = currentGWScores[0] ?? {
-            team: "N/A",
-            manager: "",
-            points: 0
-        };
-
-        const average = (
-            currentGWScores.reduce((sum, row) => sum + row.points, 0) /
-            Math.max(currentGWScores.length, 1)
-        ).toFixed(1);
-
-        /* $("leadingGWTitle").innerText =
-            currentGW.finished
-                ? `GW ${currentGW.id} Winner`
-                : `🔥 Leading GW ${currentGW.id} 🔥`;
-            */
-
-        $("leadingGW").innerHTML = `
-            <span class="lead-team">${esc(leader.team)}</span>
-            <span class="lead-manager">${esc(leader.manager)}</span>
-            <span class="lead-pts">${leader.points} pts</span>
-        `;
-
-        $("gwAverage").innerHTML = `League average: ${average} pts`;
-
         fetch(LIVE_API_URL)
         .then(response => {
             if (!response.ok) {
-                throw new Error(
-                    `Live API HTTP ${response.status}`
-                );
+                throw new Error(`Live API HTTP ${response.status}`);
             }
             return response.json();
         })
-
         .then(liveData => {
+            const standings = liveData.standings || [];
+            const leader = standings[0] || {
+                team: "N/A",
+                manager: "",
+                netPoints: 0
+            };
+
+            const average = standings.length
+                ? (
+                    standings.reduce(
+                        (sum, row) => sum + Number(row.netPoints || 0),
+                        0
+                    ) / standings.length
+                  ).toFixed(1)
+                : "0.0";
+
             let badge = "";
+
             if (liveData.status === "final") {
-                badge =
-                    '<span class="status-badge">COMPLETED</span>';
+                badge = '<span class="status-badge">COMPLETED</span>';
                 $("leadingGWTitle").innerText =
                     `GW ${liveData.currentGW} Winner`;
-            }
-            else if (liveData.status === "awaiting") {
-                badge =
-                    '<span class="awaiting-badge">AWAITING CONFIRMATION</span>';
+            } else if (liveData.status === "awaiting") {
+                badge = '<span class="awaiting-badge">AWAITING CONFIRMATION</span>';
                 $("leadingGWTitle").innerText =
                     `GW ${liveData.currentGW} Provisional Leader`;
-            }
-            else {
-                badge =
-                    '<span class="live-badge">LIVE</span>';
+            } else {
+                badge = '<span class="live-badge">LIVE</span>';
                 $("leadingGWTitle").innerText =
                     `🔥 Leading GW ${liveData.currentGW} 🔥`;
             }
 
             $("gw").innerHTML =
                 `<span>GW ${liveData.currentGW}</span>${badge}`;
-        })
 
+            $("leadingGW").innerHTML = `
+                <span class="lead-team">${esc(leader.team)}</span>
+                <span class="lead-manager">${esc(leader.manager)}</span>
+                <span class="lead-pts">${leader.netPoints} pts</span>
+            `;
+
+            $("gwAverage").innerHTML =
+                `League average: ${average} net pts`;
+        })
         .catch(error => {
-            console.error(
-                "Unable to load GW status:",
-                error
-            );
-            
-            // Fallback if /live is temporarily unavailable
+            console.error("Unable to load live GW summary:", error);
+
             $("gw").innerHTML =
                 currentGW.finished
                     ? `<span>GW ${currentGW.id}</span><span class="status-badge">COMPLETED</span>`
@@ -284,46 +264,10 @@ fetch(API_URL)
                     ? `GW ${currentGW.id} Winner`
                     : `🔥 Leading GW ${currentGW.id} 🔥`;
 
+            $("leadingGW").textContent =
+                "Live standings temporarily unavailable";
+            $("gwAverage").textContent = "";
         });
-
-        fetch(LIVE_API_URL)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(
-                        `Live API HTTP ${response.status}`
-                    );
-                }
-                return response.json();
-            })
-            .then(liveData => {
-                let badge = "";
-                if (liveData.status === "final") {
-                    badge =
-                        '<span class="status-badge">COMPLETED</span>';
-                }
-                else if (liveData.status === "awaiting") {
-                    badge =
-                        '<span class="awaiting-badge">AWAITING CONFIRMATION</span>';
-                }
-                else {
-                    badge =
-                        '<span class="live-badge">LIVE</span>';
-                }
-                $("gw").innerHTML =
-                    `<span>GW ${liveData.currentGW}</span>${badge}`;
-            })
-            .catch(error => {
-                console.error(
-                    "Unable to load GW status:",
-                    error
-                );
-                // Safe fallback to standard FPL event status.
-                $("gw").innerHTML =
-                    currentGW.finished
-                        ? `<span>GW ${currentGW.id}</span><span class="status-badge">COMPLETED</span>`
-                        : `<span>GW ${currentGW.id}</span><span class="live-badge">LIVE</span>`;
-            });
-
     }
 
     const nextGW = bootstrap.events.find(event => event.is_next);
@@ -541,15 +485,24 @@ fetch(API_URL)
                 m => m.team === mostMoney?.team
             )?.manager || "";
 
+    const completedGWIds = new Set(
+        bootstrap.events
+            .filter(event => event.finished)
+            .map(event => event.id)
+    );
+
     const benchTotals = {};
 
     histories.forEach(manager => {
+        const teamName = manager.team;
+        const managerName = manager.manager;
+        const chips = manager.history.chips || [];
 
-        const teamName =
-            manager.team;
-
-        const managerName =
-            manager.manager;
+        const benchBoostGWs = new Set(
+            chips
+                .filter(chip => chip.name === "bboost")
+                .map(chip => chip.event)
+        );
 
         benchTotals[teamName] ??= {
             team: teamName,
@@ -558,19 +511,18 @@ fetch(API_URL)
         };
 
         (manager.history.current || [])
+            .filter(week =>
+                completedGWIds.has(week.event) &&
+                !benchBoostGWs.has(week.event)
+            )
             .forEach(week => {
-
                 benchTotals[teamName].points +=
-                    week.points_on_bench || 0;
+                    Number(week.points_on_bench || 0);
             });
     });
 
-    const benchFarmer =
-        Object.values(benchTotals)
-        .sort(
-            (a,b) =>
-            b.points - a.points
-        )[0];
+    const benchFarmer = Object.values(benchTotals)
+        .sort((a, b) => b.points - a.points)[0];
 
     $("seasonSnapshot").innerHTML = `
         <div class="podium-card">
@@ -591,7 +543,7 @@ fetch(API_URL)
 
         <div class="podium-card">
             <h3>Lowest Winning Score</h3>
-            <h2 class="statpts">${lowestWinningScore}</h2>
+            <h2 class="statpts">${Number.isFinite(lowestWinningScore) ? lowestWinningScore : 0}</h2>
             <small>${esc(lowestWinningTeam)} · ${esc(lowestWinningManager)} · GW ${lowestWinningGW}</small>
         </div>
 

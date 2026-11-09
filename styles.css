@@ -602,23 +602,23 @@ h1,h2,h3{letter-spacing:-.01em}
 .analytics-table td:nth-child(4){font-weight:800;color:var(--accent-2)}
 
 /* medal columns */
-.analytics-table thead th:nth-child(5){background:var(--gold);color:#3b2d00}
-.analytics-table thead th:nth-child(6){background:var(--silver);color:#fff}
-.analytics-table thead th:nth-child(7){background:var(--bronze);color:#fff}
+.analytics-table:not(.live-table) thead th:nth-child(5){background:var(--gold);color:#3b2d00}
+.analytics-table:not(.live-table) thead th:nth-child(6){background:var(--silver);color:#fff}
+.analytics-table:not(.live-table) thead th:nth-child(7){background:var(--bronze);color:#fff}
 
-.analytics-table td:nth-child(5){color:#8a6d00;font-weight:800;background-image:linear-gradient(rgba(201,162,39,.12),rgba(201,162,39,.12))}
-.analytics-table td:nth-child(6){color:#5d6b82;font-weight:800;background-image:linear-gradient(rgba(138,150,168,.14),rgba(138,150,168,.14))}
-.analytics-table td:nth-child(7){color:#97582a;font-weight:800;background-image:linear-gradient(rgba(184,115,58,.13),rgba(184,115,58,.13))}
+.analytics-table:not(.live-table) td:nth-child(5){color:#8a6d00;font-weight:800;background-image:linear-gradient(rgba(201,162,39,.12),rgba(201,162,39,.12))}
+.analytics-table:not(.live-table) td:nth-child(6){color:#5d6b82;font-weight:800;background-image:linear-gradient(rgba(138,150,168,.14),rgba(138,150,168,.14))}
+.analytics-table:not(.live-table) td:nth-child(7){color:#97582a;font-weight:800;background-image:linear-gradient(rgba(184,115,58,.13),rgba(184,115,58,.13))}
 
 /* top 3 + avg */
-.analytics-table thead th:nth-child(8){background:var(--accent)}
-.analytics-table td:nth-child(8){
+.analytics-table:not(.live-table) thead th:nth-child(8){background:var(--accent)}
+.analytics-table:not(.live-table) td:nth-child(8){
   font-weight:800;
   color:var(--accent);
   background-image:linear-gradient(var(--accent-soft),var(--accent-soft));
   border-left:1px solid var(--line);
 }
-.analytics-table td:nth-child(9){
+.analytics-table:not(.live-table) td:nth-child(9){
   font-weight:700;
   color:var(--accent-2);
   border-left:1px solid var(--line);
@@ -708,7 +708,7 @@ h1,h2,h3{letter-spacing:-.01em}
 .live-table th:nth-child(3){text-align:left}
 /* NET PTS = primary metric */
 
-.live-table th:nth-child(4){
+.live-table .points-header{
   background:var(--gold);
   color:#3b2d00;
 }
@@ -727,7 +727,7 @@ h1,h2,h3{letter-spacing:-.01em}
 
 /* BENCH = secondary metric */
 
-.live-table th:nth-child(5){
+.live-table .bench-header{
   background:var(--accent-2);
   color:#fff;
 }

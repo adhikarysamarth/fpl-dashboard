@@ -46,7 +46,7 @@
 
     <div class="card">
         <h3>Current Gameweek</h3>
-        <div id="gw" class="current-gw-value">Loading...</div>
+        <div id="gw" class="current-gw-value" aria-live="polite">Loading...</div>
     </div>
 
     <div class="card">
@@ -77,10 +77,10 @@
     <table class="winners-table">
         <thead>
             <tr>
-                <th>Gameweek</th>
-                <th>1st Place</th>
-                <th>2nd Place</th>
-                <th>3rd Place</th>
+                <th scope="col">Gameweek</th>
+                <th scope="col">1st Place</th>
+                <th scope="col">2nd Place</th>
+                <th scope="col">3rd Place</th>
             </tr>
         </thead>
         <tbody id="gameweekWinners">

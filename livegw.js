@@ -69,8 +69,6 @@ function renderSummary(rows) {
         return;
     }
 
-    const leader = rows[0];
-
     const average = rows.length
         ? (rows.reduce((sum, row) => sum + row.netPoints, 0) / rows.length).toFixed(1)
         : "0";
@@ -136,7 +134,7 @@ function renderTable() {
     }
 
     if (allRows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4">No standings available yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5">No standings available yet.</td></tr>`;
         return;
     }
 
@@ -152,7 +150,7 @@ function renderTable() {
 
     if (visible.length === 0) {
         tbody.innerHTML =
-            `<tr><td colspan="4">No managers match "${esc(query)}".</td></tr>`;
+            `<tr><td colspan="5">No managers match "${esc(query)}".</td></tr>`;
         return;
     }
 
@@ -194,7 +192,6 @@ async function load() {
         }
 
         const data = await response.json();
-        console.log(data);
 
         allRows = (data.standings || []).map((row, index) => ({
             rank: row.rank ?? index + 1,
@@ -239,7 +236,7 @@ async function load() {
 
             if (tbody) {
                 tbody.innerHTML =
-                    `<tr><td colspan="4">Failed to load data</td></tr>`;
+                    `<tr><td colspan="5">Failed to load data</td></tr>`;
             }
 
             const summary = $("liveSummary");

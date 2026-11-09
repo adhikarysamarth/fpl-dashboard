@@ -59,10 +59,6 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
 
     });
 
-    const currentGWId =
-        events.find(
-            event => event.is_current
-        )?.id || 999;
 
     const completedGWs =
         events
@@ -125,8 +121,10 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
 
             });
 
+            const analyticsKey = team?.entry_name || manager.team;
+
             analytics[
-                team.entry_name
+                analyticsKey
             ].totalNetPoints +=
 
                 week.points -
@@ -135,7 +133,7 @@ fetch("https://fpl-api.adhikarysamarth.workers.dev/")
                 );
 
             analytics[
-                team.entry_name
+                analyticsKey
             ].completedWeeks++;
 
         });

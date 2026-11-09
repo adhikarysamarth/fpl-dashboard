@@ -46,7 +46,7 @@
             placeholder="Search team or manager"
             aria-label="Search team or manager"
             autocomplete="off">
-        <span id="liveUpdated" class="live-updated">Loading...</span>
+        <span id="liveUpdated" class="live-updated" aria-live="polite">Loading...</span>
     </div>
 
     <div class="chip-legend">
@@ -62,17 +62,17 @@
 
             <thead>
                 <tr>
-                    <th>GW Rank</th>
-                    <th>Team</th>
-                    <th>Manager</th>
-                    <th>Net Pts</th>
-                    <th>Bench</th>
+                    <th scope="col" class="rank-header">GW Rank</th>
+                    <th scope="col" class="team-header">Team</th>
+                    <th scope="col" class="manager-header">Manager</th>
+                    <th scope="col" class="points-header">Net Pts</th>
+                    <th scope="col" class="bench-header">Bench</th>
                 </tr>
             </thead>
 
-            <tbody id="liveGWTable">
+            <tbody id="liveGWTable" aria-live="polite">
                 <tr>
-                    <td colspan="4">Loading...</td>
+                    <td colspan="5">Loading...</td>
                 </tr>
             </tbody>
 
