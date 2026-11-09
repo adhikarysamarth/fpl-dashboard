@@ -1,5 +1,5 @@
 // Live GW page
-// Data contract (unchanged): GET /live -> { currentGW, standings: [{ rank, team, manager, chip, netPoints }] }
+// Data contract (unchanged): GET /live -> { currentGW, status, standings: [{ rank, team, manager, chip, netPoints }] }
 
 (() => {
 
@@ -36,36 +36,29 @@ function chipBadge(chipName) {
 
 function renderTitle(
     currentGW,
-    finished,
-    dataChecked
+    status
 ) {
-
     const title =
         $("liveGWTitle");
-
     if (!title) {
         return;
     }
-
-    const badge =
-
-        (
-            finished &&
-            dataChecked
-        )
-
-        ?
-
-        '<span class="status-badge">Final</span>'
-
-        :
-
-        '<span class="live-badge">Live</span>';
-
+    let badge = "";
+    if (status === "final") {
+        badge =
+            '<span class="status-badge">Final</span>';
+    }
+    else if (status === "awaiting") {
+        badge =
+            '<span class="awaiting-badge">Awaiting Confirmation</span>';
+    }
+    else {
+        badge =
+            '<span class="live-badge">Live</span>';
+    }
     title.innerHTML =
         `GW ${esc(currentGW)} Standings ` +
         badge;
-
 }
 
 function renderSummary(rows) {
@@ -217,8 +210,7 @@ async function load() {
 
         renderTitle(
             data.currentGW,
-            data.finished,
-            data.dataChecked
+            data.status
         );
         renderSummary(allRows);
         renderTable();

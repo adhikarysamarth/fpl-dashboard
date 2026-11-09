@@ -1,4 +1,6 @@
 const API_URL = "https://fpl-api.adhikarysamarth.workers.dev/";
+const LIVE_API_URL = "https://fpl-api.adhikarysamarth.workers.dev/live";
+
 const PRIZES = ["$70", "$50", "$30"];
 const CHIPS = {
     freehit:  { label: "FH", cls: "chip-fh" },
@@ -216,10 +218,11 @@ fetch(API_URL)
             Math.max(currentGWScores.length, 1)
         ).toFixed(1);
 
-        $("leadingGWTitle").innerText =
+        /* $("leadingGWTitle").innerText =
             currentGW.finished
                 ? `GW ${currentGW.id} Winner`
                 : `🔥 Leading GW ${currentGW.id} 🔥`;
+            */
 
         $("leadingGW").innerHTML = `
             <span class="lead-team">${esc(leader.team)}</span>
@@ -229,10 +232,97 @@ fetch(API_URL)
 
         $("gwAverage").innerHTML = `League average: ${average} pts`;
 
-        $("gw").innerHTML =
-            currentGW.finished
-                ? `<span>GW ${currentGW.id}</span><span class="status-badge">COMPLETED</span>`
-                : `<span>GW ${currentGW.id}</span><span class="live-badge">LIVE</span>`;
+        fetch(LIVE_API_URL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(
+                    `Live API HTTP ${response.status}`
+                );
+            }
+            return response.json();
+        })
+
+        .then(liveData => {
+            let badge = "";
+            if (liveData.status === "final") {
+                badge =
+                    '<span class="status-badge">COMPLETED</span>';
+                $("leadingGWTitle").innerText =
+                    `GW ${liveData.currentGW} Winner`;
+            }
+            else if (liveData.status === "awaiting") {
+                badge =
+                    '<span class="awaiting-badge">AWAITING CONFIRMATION</span>';
+                $("leadingGWTitle").innerText =
+                    `GW ${liveData.currentGW} Provisional Leader`;
+            }
+            else {
+                badge =
+                    '<span class="live-badge">LIVE</span>';
+                $("leadingGWTitle").innerText =
+                    `🔥 Leading GW ${liveData.currentGW} 🔥`;
+            }
+
+            $("gw").innerHTML =
+                `<span>GW ${liveData.currentGW}</span>${badge}`;
+        })
+
+        .catch(error => {
+            console.error(
+                "Unable to load GW status:",
+                error
+            );
+            
+            // Fallback if /live is temporarily unavailable
+            $("gw").innerHTML =
+                currentGW.finished
+                    ? `<span>GW ${currentGW.id}</span><span class="status-badge">COMPLETED</span>`
+                    : `<span>GW ${currentGW.id}</span><span class="live-badge">LIVE</span>`;
+
+            $("leadingGWTitle").innerText =
+                currentGW.finished
+                    ? `GW ${currentGW.id} Winner`
+                    : `🔥 Leading GW ${currentGW.id} 🔥`;
+
+        });
+
+        fetch(LIVE_API_URL)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(
+                        `Live API HTTP ${response.status}`
+                    );
+                }
+                return response.json();
+            })
+            .then(liveData => {
+                let badge = "";
+                if (liveData.status === "final") {
+                    badge =
+                        '<span class="status-badge">COMPLETED</span>';
+                }
+                else if (liveData.status === "awaiting") {
+                    badge =
+                        '<span class="awaiting-badge">AWAITING CONFIRMATION</span>';
+                }
+                else {
+                    badge =
+                        '<span class="live-badge">LIVE</span>';
+                }
+                $("gw").innerHTML =
+                    `<span>GW ${liveData.currentGW}</span>${badge}`;
+            })
+            .catch(error => {
+                console.error(
+                    "Unable to load GW status:",
+                    error
+                );
+                // Safe fallback to standard FPL event status.
+                $("gw").innerHTML =
+                    currentGW.finished
+                        ? `<span>GW ${currentGW.id}</span><span class="status-badge">COMPLETED</span>`
+                        : `<span>GW ${currentGW.id}</span><span class="live-badge">LIVE</span>`;
+            });
 
     }
 
